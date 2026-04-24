@@ -31,3 +31,10 @@
 
 # Ignore debug folder.
 *Debug/
+
+# Ignore build folder.
+*build/
+
+# Ignore SDK config files.
+*sdkconfig
+
