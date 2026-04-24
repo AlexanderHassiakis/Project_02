@@ -38,3 +38,5 @@
 # Ignore SDK config files.
 *sdkconfig
 
+#Ignore Vscode files
+*.vscode
