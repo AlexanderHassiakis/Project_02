@@ -2,7 +2,7 @@
 
 #include <cstdint.h>
 
-namespace include::driver::interface
+namespace include::driver
 {
 	class Interface
 	{
