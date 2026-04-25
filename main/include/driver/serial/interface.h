@@ -23,18 +23,33 @@ namespace include::driver::interface
 		virtual void init_uart() noexcept = 0;
 
 		/**
-		 * @brief sending commands
+		 * @brief sending commands/data
 		 * 
 		 */
-		virtual void send() noexcept = 0;
+		virtual void send_data() noexcept = 0;
 
 
 		/**
-		 * @brief recives commands
+		 * @brief recives commands/data
 		 * 
 		 */
-		virtual void recive() noexcept = 0;
+		virtual void recivedData() noexcept = 0;
 
+		/**
+		 * @brief connected
+		 * 
+		 * @return true 
+		 * @return false 
+		 */
+		virtual bool connected() noexcept = 0;
+
+		/**
+		 * @brief disconnected
+		 * 
+		 * @return true 
+		 * @return false 
+		 */
+		virtual bool disconnected() noexcept = 0;
 
 
 
