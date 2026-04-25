@@ -11,37 +11,74 @@ namespace include::driver
 	{
         public:
 			/**
+			 * @brief Constructor.
+			 */
+			Stub() noexcept;
+
+			/**
 			 * @brief destructor
 			 * 			Deletes to release memory
 			 */
-			 ~Interface() noexcept = default :
+			~Stub() noexcept = default :
 
 			/**
 			 * @brief Initializes the Uart communication
 			 *
 			 */
-			 void init_uart() noexcept override{
+			void init_uart() noexcept override {
 
-				std::printf("UART Initialized!\n")
-			 }
+            std::printf("UART Initialized!\n")
+          	}
 
 			/**
 			 * @brief sending commands/data
 			 *
 			 */
-			 void send_data(std::uint8_t msg) noexcept override
-			 {
+			 void send_data(std::uint8_t msg*) noexcept override
+			{
 				return 0U; //placeholder
-			 }
+
+			}
+
+			/**
+			 * @brief Sends commands
+			 * 
+			 * @param [in] command to be sent via uart.
+			 */
+			void sendCommand(std::uint8_t command) noexcept
+			{
+				if (command == 0u;){return 0U;} // checks the command to see that its something there.
+				
+				if (!connectionStatus) {return 0U;} // check to see if the connection is up. 
+
+				return 0u; // placeholder
+			}
 
 			/**
 			 * @brief recives commands/data
+			 * 			
 			 *
 			 */
-			 void recivedData() noexcept override
+			void recivedData() noexcept override
 			 {
+				
 				return 0U; // placeholder
 			 }
+
+			 /**
+			  * @brief recivde command.
+			  * 
+			  * 	The device will responed on the command sent to it.
+			  */
+			 void reciveCommand() noexcept
+			 {
+
+				if (!availableCommand) {return 0U;} // Check if there is even a message/command sent.
+
+				return 0U; // Placeholder
+                             
+                           
+			}
 
 			/**
 			 * @brief connected
@@ -72,16 +109,17 @@ namespace include::driver
 			Stub &operator=(const Stub &)	= delete; // No copy assignment.
 			Stub &operator=(Stub &&) 		= delete; // No move assignment.
 
-                       private:
+			private:
+
 			 /** Buffer size. */
     		static constexpr std::uint8_t BufSize{100U};
 
 
-			std:uint8_t data[BufSize]; // Data 
+			std:uint8_t data[BufSize]; // Data array 
 
-			
-			bool commad;
-			bool connectionStatus; // status of UART connection 
+
+			bool availableCommand; // Status if there is a command.
+			bool connectionStatus; // status off the UART connection 
         }
 
 } // namespace include::driver::serial
