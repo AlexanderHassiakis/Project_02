@@ -39,5 +39,8 @@ namespace include::driver::gpio
 		 * @param [in] GPIO pinnumber.
 		 */
 		 void pullUpGpio(std::uint8_t pinNumber) noexcept override;
-	}
+		 
+		private:
+		
+	};
 }
