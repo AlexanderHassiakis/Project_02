@@ -1,3 +1,8 @@
+
+/**
+ * @brief Stub for GPIO
+ * 
+ */
 #pragma once
 
 #include <cstdint>
