@@ -6,7 +6,8 @@
 #include <cstring>
 #include "driver/serial/interface.h"
 #include "esp_log.h"
-#include "driver/uart.h"
+#include <esp_driver_uart>
+
 
 namespace include::driver
 {
