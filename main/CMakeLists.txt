@@ -7,5 +7,6 @@ idf_component_register(
         "source/driver/serial/esp32s3.cpp"
         "source/driver/tempsensor/tmp36.cpp"
         "source/driver/timer/esp32s3.cpp"
-    INCLUDE_DIRS
-        "include")
+    INCLUDE_DIRS "include"
+    REQUIRES esp_driver_uart driver esp_timer
+    )
