@@ -3,7 +3,9 @@
  * @brief Stub example.
  */
 #include <cstdint>
-
+#include <chrono>
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
 #include "driver/serial/stub.h"
 #include "esp_log.h"
 
@@ -38,11 +40,11 @@ void runComUartStub(include::driver::Interface& uart) {
 extern "C" void app_main(){
 
   include::driver::Stub uartStub;
-
+while(1)
+{
   runComUartStub(uartStub);
-  return;
-
+  vTaskDelay(pdMS_TO_TICKS(1000));
   
-
-
+}
+ 
 }
