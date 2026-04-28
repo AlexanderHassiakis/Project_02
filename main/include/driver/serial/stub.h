@@ -1,12 +1,12 @@
 #pragma once
-#include <cstdint.h>
+#include <cstdint>
 #include <cstdbool>
-#include <cstd
+#include <cstdio>
 #include <chrono>
 
 namespace include::driver
 {
-	class stub final : public Inteface
+	class Stub final : public Inteface
 	{
 	public:
 		/**
@@ -15,9 +15,10 @@ namespace include::driver
 		Stub() noexcept
             : myDataAvailable{false}
           	,myConnetionStatus{false}
-			,
+			,myMsg{nullptr}
+			,myDataMsg{}
 		{
-            return 0U; // placeholder
+            
 		}
 
 		/**
@@ -39,7 +40,7 @@ namespace include::driver
 		{
 			std::printf("Starts initelizing UART!\n");
 			std::printf("UART Connected!\n");
-			myConnetionStatus{true};
+			myConnetionStatus =true ;
 		}
 
 		/**
@@ -50,15 +51,25 @@ namespace include::driver
 		{	//Check if there is a connection.
 			if (!myConnectionStatus){return 0U;}
 			 // Print message if valid.
-        	if (nullptr != msg) { std::printf("%s", msg,"Will be sent!\n"); }
-			myDataAvailable{true};
+        	if (nullptr != msg) { std::printf("%s Will be sent!\n", msg); }
+			myDataAvailable = true ;
 			}
 
 		void send(const std::uint8_t *buf, std::uint16_t bufLen) noexcept override
 		{	//Check if there is a connection.
 			if (!myConnectionStatus){return 0U;}
-			myDataAvailable{true};
-			}
+			//Check that the file is not to large. if to large send only the bufsize to prevent crash.
+			std::uint16_t copyLen = (bufLen < BufSize) ? bufLen : BufSize;
+
+			for (size_t i = 0; i < copyLen; i++)
+			{
+				myDataMsg[i] = buf[i];
+            }
+
+			myDataAvailable = true;
+			std::printf("[UART Stub] sent %u bytes.\n",copyLen);
+
+		}
 
 		/**
 		 * @brief recives commands/
@@ -72,10 +83,11 @@ namespace include::driver
 		std::uint16_t received(std::uint8_t *buf, std::uint16_t bufLen) noexcept override
 		{
 			//Checks if there is a msg/data available.
-			if (!myDataAvailable) { return 0U};
+			if (!myDataAvailable || buf == nullptr || bufLen == 0) { return 0U};
 			std::printf("Message recived:\n")
 			std::printf("%s",msg);
 			myDataAvailable{false};
+			return 1U;
 		
 		}
 
@@ -98,12 +110,12 @@ namespace include::driver
 
 	private:
 		/** Buffer size. */
-		static constexpr std::uint16_t BufSize{100U};
-		std::uint8_t myDataMsg[BufSize]; // Data array
-		std::char* msg;
+		static constexpr std::uint16_t BufSize{200U};
+		std::uint8_t myDataMsg[BufSize]{0U}; // Data array
+		char* myMsg;
 
 		bool myDataAvailable;	// Status if there is a command.
 		bool myConnetionStatus; // status off the UART connection
-	}
+	};
 
 } // namespace include::driver::serial
