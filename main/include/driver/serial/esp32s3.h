@@ -3,8 +3,10 @@
 #include <cstdbool>
 #include <cstdint>
 #include <cstdio>
+#include <cstring>
 #include "driver/serial/interface.h"
 #include "esp_log.h"
+#include "driver/uart.h"
 
 namespace include::driver
 {
@@ -33,8 +35,11 @@ namespace include::driver
 		 */
 		bool init() noexcept override
 		{
+			uart
+		
 			std::printf("Starts initelizing UART!\n");
 			std::printf("UART Connected!\n");
+			
 			myConnectionStatus = true;
 			return true;
 		}
