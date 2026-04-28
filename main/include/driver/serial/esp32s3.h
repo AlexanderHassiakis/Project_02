@@ -35,7 +35,7 @@ namespace include::driver
 		 */
 		bool init() noexcept override
 		{
-			uart
+			
 		
 			std::printf("Starts initelizing UART!\n");
 			std::printf("UART Connected!\n");
