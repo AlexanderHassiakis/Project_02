@@ -38,7 +38,6 @@ namespace include::driver::gpio
 			 */
 			virtual void pullUpGpio(std::uint8_t pinNumber) noexcept = 0;
 
-
 	}
 
 
