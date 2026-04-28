@@ -6,6 +6,9 @@
 
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
+#include "driver/serial/stub.h"
+#include "esp_log.h"
+
 
 #include "driver/gpio/direction.h"
 #include "driver/gpio/esp32s3.h"
@@ -55,12 +58,12 @@ extern "C" void app_main(void) {
 }
 
 
-int main(){
+extern "C" void app_main(){
 
   include::driver::Stub uartStub;
 
   runComUartStub(uartStub);
-  return 0;
+  return;
 
   
 

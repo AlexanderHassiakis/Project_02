@@ -3,6 +3,7 @@
 #include <cstdbool>
 #include <cstdio>
 #include <chrono>
+#include "driver/serial/interface.h"
 
 namespace include::driver
 {
@@ -13,10 +14,10 @@ namespace include::driver
 		 * @brief Constructor.
 		 */
 		Stub() noexcept
-            : myDataAvailable{false}
-          	,myConnectionStatus{false}
+            :myDataMsg{}
 			,myMsg{nullptr}
-			,myDataMsg{}
+			,myDataAvailable{false}
+          	,myConnectionStatus{false}
 		{
             
 		}
@@ -49,7 +50,7 @@ namespace include::driver
 		 */
 		void send(const char *msg) noexcept override
 		{	//Check if there is a connection.
-			if (!myConnectionStatus){return 0U;}
+			if (!myConnectionStatus){return;}
 			 // Print message if valid.
         	if (nullptr != msg) { std::printf("%s Will be sent!\n", msg); }
 			myMsg = msg;
@@ -58,7 +59,7 @@ namespace include::driver
 
 		void send(const std::uint8_t *buf, std::uint16_t bufLen) noexcept override
 		{	//Check if there is a connection.
-			if (!myConnectionStatus){return 0U;}
+			if (!myConnectionStatus){return;}
 			//Check that the file is not to large. if to large send only the bufsize to prevent crash.
 			std::uint16_t copyLen = (bufLen < BufSize) ? bufLen : BufSize;
 
@@ -85,7 +86,7 @@ namespace include::driver
 		{
 			//Checks if there is a msg/data available.
 			if (!myDataAvailable) { return 0U;};
-			std::printf("Message recived:\n")
+			std::printf("Message recived:\n");
 			std::printf("%s",myMsg);
 			if ( buf != nullptr && bufLen > 0)
 			{
