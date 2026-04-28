@@ -87,7 +87,7 @@ namespace include::driver
 			//Checks if there is a msg/data available.
 			if (!myDataAvailable) { return 0U;};
 			std::printf("Message recived:\n");
-			std::printf("%s",myMsg);
+			std::printf("%s\n",myMsg);
 			if ( buf != nullptr && bufLen > 0)
 			{
 				for (size_t i = 0; i < bufLen; i++)
@@ -96,8 +96,6 @@ namespace include::driver
 				}
 			}
 
-             
-			
 			
 			myDataAvailable = false;
 			return 1U;
