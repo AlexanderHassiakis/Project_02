@@ -6,8 +6,7 @@
 
 #include "driver/serial/stub.h"
 #include "esp_log.h"
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
+
 
 
 void runComUartStub(include::driver::Interface& uart) {
@@ -36,12 +35,12 @@ void runComUartStub(include::driver::Interface& uart) {
 }
 
 
-int main(){
+extern "C" void app_main(){
 
   include::driver::Stub uartStub;
 
   runComUartStub(uartStub);
-  return 0;
+  return;
 
   
 
