@@ -14,7 +14,7 @@ namespace include::driver
 		 */
 		Stub() noexcept
             : myDataAvailable{false}
-          	,myConnetionStatus{false}
+          	,myConnectionStatus{false}
 			,myMsg{nullptr}
 			,myDataMsg{}
 		{
@@ -40,7 +40,8 @@ namespace include::driver
 		{
 			std::printf("Starts initelizing UART!\n");
 			std::printf("UART Connected!\n");
-			myConnetionStatus =true ;
+			myConnectionStatus = true;
+			return true;
 		}
 
 		/**
@@ -52,8 +53,9 @@ namespace include::driver
 			if (!myConnectionStatus){return 0U;}
 			 // Print message if valid.
         	if (nullptr != msg) { std::printf("%s Will be sent!\n", msg); }
-			myDataAvailable = true ;
-			}
+			myMsg = msg;
+			myDataAvailable = true;
+		}
 
 		void send(const std::uint8_t *buf, std::uint16_t bufLen) noexcept override
 		{	//Check if there is a connection.
@@ -83,10 +85,21 @@ namespace include::driver
 		std::uint16_t received(std::uint8_t *buf, std::uint16_t bufLen) noexcept override
 		{
 			//Checks if there is a msg/data available.
-			if (!myDataAvailable || buf == nullptr || bufLen == 0) { return 0U};
+			if (!myDataAvailable) { return 0U;};
 			std::printf("Message recived:\n")
-			std::printf("%s",msg);
-			myDataAvailable{false};
+			std::printf("%s",myMsg);
+			if ( buf != nullptr && bufLen > 0)
+			{
+				for (size_t i = 0; i < bufLen; i++)
+				{
+					std::printf("%u",buf[i]);
+				}
+			}
+
+             
+			
+			
+			myDataAvailable = false;
 			return 1U;
 		
 		}
@@ -99,7 +112,7 @@ namespace include::driver
 		 */
 		bool isConnected() const noexcept override
 		{
-			return myConnetionStatus;
+			return myConnectionStatus;
 		}
 
 		/**Stub construct Forbidden moves/copy. **/
@@ -110,12 +123,12 @@ namespace include::driver
 
 	private:
 		/** Buffer size. */
-		static constexpr std::uint16_t BufSize{200U};
+		static constexpr std::uint16_t BufSize{200U}; // Array size.
 		std::uint8_t myDataMsg[BufSize]{0U}; // Data array
-		char* myMsg;
+		const char* myMsg;
 
 		bool myDataAvailable;	// Status if there is a command.
-		bool myConnetionStatus; // status off the UART connection
+		bool myConnectionStatus; // status off the UART connection
 	};
 
 } // namespace include::driver::serial
