@@ -1,35 +1,49 @@
 // Main file //
 /**
- * @brief GPIO example.
+ * @brief Stub example.
  */
 #include <cstdint>
 
-#include "driver/gpio.h"
+#include "driver/serial/stub.h"
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
-/**
- * @brief Blink an LED every 500 ms.
- */
-extern "C" void app_main(void) {
-  constexpr gpio_num_t ledPin{static_cast<gpio_num_t>(2U)};
-  constexpr std::uint32_t gpioHigh{1U};
-  constexpr std::uint32_t gpioLow{0U};
-  constexpr std::uint32_t blinkSpeed_ms{500U};
 
-  // Configure LED as output.
-  gpio_reset_pin(ledPin);
-  gpio_set_direction(ledPin, GPIO_MODE_OUTPUT);
+void runComUartStub(include::driver::Interface& uart) {
+  std::printf("Startar Komtest\n");
 
-  // Blink LED every 500 ms.
-  while (1) {
-    gpio_set_level(ledPin, gpioHigh);
-    ESP_LOGI("MAIN", "LED on!");
-    vTaskDelay(pdMS_TO_TICKS(blinkSpeed_ms));
-
-    gpio_set_level(ledPin, gpioLow);
-    ESP_LOGI("MAIN", "LED off!");
-    vTaskDelay(pdMS_TO_TICKS(blinkSpeed_ms));
+  if(!uart.init()) {
+    std::printf("Fel: kundet inte initiera! UART!\n");
+    return;
   }
+
+
+  const char* helloMsg = "HELLO_SYSTEM_READY";
+  uart.send(helloMsg);
+
+  std::uint8_t rawData[] {0xDE, 0xBE, 0xEE};
+  uart.send(rawData, sizeof(rawData));
+  if(uart.isConnected()){
+    std::printf("Status : Connected is active UART\n");
+  }
+
+  std::uint8_t rxBuffer[10];
+  std::uint8_t bytesReceived = uart.received(rxBuffer, sizeof(rxBuffer));
+
+  std::printf("Resutlat tog emot %u bytes.\n",bytesReceived);
+  std::printf("Test avslutat\n");
+}
+
+
+int main(){
+
+  include::driver::Stub uartStub;
+
+  runComUartStub(uartStub);
+  return 0;
+
+  
+
+
 }
