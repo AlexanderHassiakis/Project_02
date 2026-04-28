@@ -6,7 +6,7 @@
 
 namespace include::driver
 {
-	class Stub final : public Inteface
+	class Stub final : public Interface
 	{
 	public:
 		/**
@@ -26,8 +26,7 @@ namespace include::driver
 		 * 			Deletes to release memory
 		 */
 		~Stub() noexcept
-		{
-
+		{	
 		}
 
 		/**

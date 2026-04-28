@@ -1,6 +1,6 @@
 #pragma once
 
-#include <cstdint.h>
+#include <cstdint>
 
 namespace include::driver
 {
@@ -12,7 +12,7 @@ public:
 	 * @brief destructor
 	 * 			Deletes to release memory
 	 */
-	virtual ~Interface() noexcept = default:
+	virtual ~Interface() noexcept = default;
 
 
 	/**
