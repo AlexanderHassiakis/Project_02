@@ -18,13 +18,13 @@ namespace include::driver::gpio
 			 * @brief Turns output the Gpio_pin.
 			 * @param [in] GPIO pinnumber.
 			 */
-			virtual void output(std::uint8_t pinNumber) noexcept = 0;
+			virtual void output(std::uint8_t pinNumber,bool state) noexcept = 0;
 
 			/**
 			 * @brief Turns input the Gpio_pin.
 			 * @param [in] GPIO pinnumber.
 			 */
-			virtual void input(std::uint8_t pinNumber) noexcept = 0;
+			virtual void input(std::uint8_t pinNumber, bool state) noexcept = 0;
 
 			/**
 			 * @brief Turns on Toggle

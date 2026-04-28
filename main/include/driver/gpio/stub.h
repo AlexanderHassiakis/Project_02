@@ -31,19 +31,26 @@ namespace include::driver::gpio
 		 * @brief Turns output the Gpio_pin.
 		 * @param [in] GPIO pinnumber.
 		 */
-		 void output(std::uint8_t pinNumber) noexcept override
+		 void output(std::uint8_t pinNumber,bool state) noexcept override
 		 {
-			std::printf("%s",pinNumber,"Is now set as output");
 
+			std::printf("%s",pinNumber,"Is now set as output");
+			myState = state;
+			myPin = pinNumber;
+			myDirection = Direction::output;
 		 }
 
 		/**
 		 * @brief Turns input the Gpio_pin.
 		 * @param [in] GPIO pinnumber.
 		 */
-		 void input(std::uint8_t pinNumber) noexcept override
+		 void input(std::uint8_t pinNumber, bool state) noexcept override
 		 {
 			std::printf("%s",pinNumber,"Is now set as input");
+			myState = state;
+			myPin = pinNumber;
+			myDirection = Direction::input;
+			myPullup = false;
 		 }
 
 		/**
@@ -52,7 +59,10 @@ namespace include::driver::gpio
 		 */
 		 void toggle(std::uint8_t pinNumber) noexcept override
 		 {
-			std::printf("%s",pinNumber,"Toggels GPIO if false turns true and false if true before.");	
+			std::printf("%s",pinNumber,"Toggels GPIO if false turns true and false if true before.");
+			if (myState){myState = false;}
+			else{myState = true;}
+		
 		 }
 
 		/**
@@ -62,12 +72,18 @@ namespace include::driver::gpio
 		 void pullUpGpio(std::uint8_t pinNumber) noexcept override
 		 {
 			std::printf("%s",pinNumber,"Internal pull up resistor activated and set pin to input.");
+			myState = state;
+			myPin = pinNumber;
+			myDirection = Direction::input;
+			myPullup = true;
+
 		 }
 		 
 		private:
 		    /** GPIO state (true = high, false = low). */
 			bool myState;
-			const Direction myDirection;
+			bool myPullup;
+			const myDirection;
 			const std::uint8_t myPin;
 
 		
