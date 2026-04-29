@@ -1,13 +1,15 @@
 #pragma once
-#include <chrono>
 #include <cstdbool>
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
-#include "driver/serial/interface.h"
-#include "esp_log.h"
-#include <esp_driver_uart>
 
+#include "serial/interface.h"
+#include "driver/uart.h"       // Grundläggande UART-funktioner
+#include "driver/gpio.h"       // För att styra pinnar 
+#include "esp_log.h"           // För snygg debugging (ESP_LOGI)
+#include "freertos/FreeRTOS.h" // Krävs för task-hantering och köer
+#include "freertos/queue.h"    // För UART-events (avbrott)
 
 namespace include::driver
 {
@@ -36,10 +38,21 @@ namespace include::driver
 		 */
 		bool init() noexcept override
 		{
+			/**
+			 * @brief UART Config
+			 * 
+			 */
 			
-		
-			std::printf("Starts initelizing UART!\n");
-			std::printf("UART Connected!\n");
+			uart_config_t uart_config = 
+			{
+				.baud_rate = 115200,
+				.data_bits = UART_DATA_8_BITS,
+				.parity    = UART_PARITY_DISABLE,
+				.stop_bits = UART_STOP_BITS_1,
+				.flow_ctrl = UART_HW_FLOWCTRL_DISABLE
+			};
+			uart_param_config()
+			uart_set_pin()
 			
 			myConnectionStatus = true;
 			return true;
