@@ -1,10 +1,10 @@
 
 #pragma once
 
-#include <cstdint.h>
+#include <cstdint>
 
 
-namespace include::driver::gpio
+namespace driver::gpio
 {
 	class Interface
 	{

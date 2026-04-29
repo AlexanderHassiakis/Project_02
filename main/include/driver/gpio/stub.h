@@ -11,7 +11,7 @@
 #include "driver/gpio/direction.h"
 #include "driver/gpio/interface.h"
 
-namespace include::driver::gpio
+namespace driver::gpio
 {
 	class Stub final : public Interface
 	{
