@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-namespace include::driver
+namespace driver::serial
 {
 class Interface
 {
@@ -51,4 +51,4 @@ public:
 	 */
 	virtual bool isConnected() const noexcept = 0;
 };
-} // namespace include::driver::interface
+} // namespace driver::serial

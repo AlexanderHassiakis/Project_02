@@ -60,10 +60,8 @@ extern "C" void app_main(void) {
 
 extern "C" void app_main(){
 
-  include::driver::Stub uartStub;
 while(1)
 {
-  runComUartStub(uartStub);
   vTaskDelay(pdMS_TO_TICKS(1000));
   
 }
