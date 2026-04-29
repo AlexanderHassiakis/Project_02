@@ -54,9 +54,10 @@ public:
 
 private:
   /** GPIO state (true = high, false = low). */
+
   bool myState;
   bool myPullup;
-  const myDirection;
+  const std::uint8_t myDirection;
   const std::uint8_t myPin;
 };
 } // namespace include::driver::gpio

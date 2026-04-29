@@ -1,75 +1,49 @@
-
 /**
- * @brief  GPIO
- *
+ * @brief Esp32s3 GPIO Implementation
  */
 
-
-#include <cstdint>
+#include "driver/gpio/esp32s3.h"
+#include "driver/gpio.h"
 #include <cstdio>
 
-#include "driver/gpio.h"
-
-#include "driver/gpio/direction.h"
-#include "driver/gpio/interface.h"
-#include "driver/gpio/esp32s3.h"
-
 namespace driver::gpio {
-class Esp32s3 final : public Interface {
-public:
-  /**
-   * @brief Destructor.
-   */
-  ~Esp32s3() noexcept = default;
-
-  /**
-   * @brief Construct a new Esp32s3 object
-   *
-   */
-  Esp32s3() noexcept = default;
-
-  
-  void output(std::uint8_t pinNumber, bool state) noexcept  {
-
-    constexpr gpio_num_t gpioNumber{static_cast<gpio_num_t>(pinNumber)};
-    gpio_set_direction(gpioNumber, GPIO_MODE_OUTPUT);
-    gpio_set_level(gpioNumber, state);
-    std::printf("%s", pinNumber, "Is now set as output");
-
-    myDirection = Direction::output;
-  }
 
 
-  void input(std::uint8_t pinNumber, bool state) noexcept  {
-    std::printf("%s", pinNumber, "Is now set as input");
-    constexpr gpio_num_t gpioNumber{static_cast<gpio_num_t>(pinNumber)};
-    gpio_set_direction(gpioNumber, GPIO_MODE_INPUT);
-    gpio_set_level(gpioNumber, state);
-	
-    myDirection = Direction::input;
-  }
 
+void Esp32s3::output(std::uint8_t pinNumber, bool state) noexcept {
+  const gpio_num_t gpioNumber{static_cast<gpio_num_t>(pinNumber)};
 
-  void toggle(std::uint8_t pinNumber) noexcept  {
-    constexpr gpio_num_t gpioNumber{static_cast<gpio_num_t>(pinNumber)};
-    gpio_set_direction(gpioNumber, GPIO_MODE_OUTPUT);
-    gpio_set_level(gpioNumber,=!);
+  gpio_set_direction(gpioNumber, GPIO_MODE_OUTPUT);
+  gpio_set_level(gpioNumber, state);
 
-  }
+  std::printf("Pin %u is now set as output\n", pinNumber);
 
+  myState = state;
+}
 
-  void pullUpGpio(std::uint8_t pinNumber) noexcept  {
-    constexpr gpio_num_t gpioNumber{static_cast<gpio_num_t>(pinNumber)};
-    gpio_set_direction(gpioNumber, GPIO_PULLUP_ENABLE);
-    std::printf("%s", pinNumber, "Is now set as pullup");
-    myDirection = Direction::input;
-  }
+void Esp32s3::input(std::uint8_t pinNumber, bool state) noexcept {
+  const gpio_num_t gpioNumber{static_cast<gpio_num_t>(pinNumber)};
 
-private:
-  /** GPIO state (true = high, false = low). */
-  bool myState;
-  bool myPullup;
-  const myDirection;
-  const std::uint8_t myPin;
-};
+  gpio_set_direction(gpioNumber, GPIO_MODE_INPUT);
+  gpio_set_level(gpioNumber, state);
+
+  std::printf("Pin %u is now set as input\n", pinNumber);
+}
+
+void Esp32s3::toggle(std::uint8_t pinNumber) noexcept {
+  const gpio_num_t gpioNumber{static_cast<gpio_num_t>(pinNumber)};
+
+  myState = !myState;
+  gpio_set_level(gpioNumber, myState);
+}
+
+void Esp32s3::pullUpGpio(std::uint8_t pinNumber) noexcept {
+  const gpio_num_t gpioNumber{static_cast<gpio_num_t>(pinNumber)};
+
+  // ESP-IDF funktion för pullup
+  gpio_set_pull_mode(gpioNumber, GPIO_PULLUP_ONLY);
+
+  std::printf("Pin %u is now set as pullup\n", pinNumber);
+}
+
 } // namespace driver::gpio
