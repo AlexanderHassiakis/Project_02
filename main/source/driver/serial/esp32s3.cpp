@@ -26,7 +26,8 @@ bool Esp32s3::init() noexcept {
       .data_bits = UART_DATA_8_BITS,
       .parity = UART_PARITY_DISABLE,
       .stop_bits = UART_STOP_BITS_1,
-      .flow_ctrl = UART_HW_FLOWCTRL_DISABLE.source_clk = UART_SCLK_DEFAULT,
+      .flow_ctrl = UART_HW_FLOWCTRL_DISABLE,
+	  .source_clk = UART_SCLK_DEFAULT,
   };
   uart_set_pin(UART_NUM_1, 17, 16, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE);
   const int rx_buffer_size = 1024;
@@ -53,7 +54,7 @@ void Esp32s3::send(const char *msg) noexcept { // Check if there is a connection
   }
 }
 
-void Esp32s3::send(const std::uint8_t *buf, std::uint16_t bufLen) noexceptoverride { // Check if there is a connection.
+void Esp32s3::send(const std::uint8_t *buf, std::uint16_t bufLen) noexcept { // Check if there is a connection.
   if (!myConnectionStatus) {
     return;
   }
