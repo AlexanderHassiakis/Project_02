@@ -42,6 +42,7 @@ public:
 	 * 
 	 */
 	virtual std::uint16_t received(std::uint8_t* buf, std::uint16_t bufLen) noexcept = 0;
+	virtual std::uint16_t received(const char *str, std::uint16_t strLen) noexcept = 0;
 
 	/**
 	 * @brief connected

@@ -94,31 +94,37 @@ public:
 		myDataAvailable = false;
 		return 1U;
 	}
-
-	/**
-	 * @brief connected
-	 *
-	 * @return true
-	 * @return false
-	 */
-	bool isConnected() const noexcept override
+    
+	std::uint16_t received(const char *str, std::uint16_t strLen) noexcept override
 	{
-		return myConnectionStatus;
+		// Cast to byte array to call the main received function.
+		std::uint8_t *buf{reinterpret_cast<std::uint8_t *>(const_cast<char *>(str))};
+		return received(buf, strLen);
 	}
 
-	/**Stub construct Forbidden moves/copy. **/
-	Stub(const Stub &) = delete;			// No copy constructor.
-	Stub(Stub &&) = delete;					// No move constructor.
-	Stub &operator=(const Stub &) = delete; // No copy assignment.
-	Stub &operator=(Stub &&) = delete;		// No move assignment.
+          /**
+           * @brief connected
+           *
+           * @return true
+           * @return false
+           */
+          bool isConnected() const noexcept override {
+            return myConnectionStatus;
+          }
 
-private:
-	/** Buffer size. */
-	static constexpr std::uint16_t BufSize{200U}; // Array size.
-	std::uint8_t myDataMsg[BufSize]{0U}; // Data array
-	const char* myMsg;
+          /**Stub construct Forbidden moves/copy. **/
+          Stub(const Stub &) = delete;            // No copy constructor.
+          Stub(Stub &&) = delete;                 // No move constructor.
+          Stub &operator=(const Stub &) = delete; // No copy assignment.
+          Stub &operator=(Stub &&) = delete;      // No move assignment.
 
-	bool myDataAvailable;	// Status if there is a command.
-	bool myConnectionStatus; // status off the UART connection
-};
+        private:
+          /** Buffer size. */
+          static constexpr std::uint16_t BufSize{200U}; // Array size.
+          std::uint8_t myDataMsg[BufSize]{0U};          // Data array
+          const char *myMsg;
+
+          bool myDataAvailable;    // Status if there is a command.
+          bool myConnectionStatus; // status off the UART connection
+        };
 } // namespace driver::serial::serial

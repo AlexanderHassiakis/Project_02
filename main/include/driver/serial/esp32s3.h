@@ -54,6 +54,16 @@ public:
 	std::uint16_t received(std::uint8_t *buf, std::uint16_t bufLen) noexcept override;
 
 	/**
+	 * @brief receive commands
+	 *
+	 * @param[out] buf Buffer holding received data.
+	 * @param[in] bufLen String length in bytes.
+	 *
+	 * @return Number of received bytes.
+	 */
+    std::uint16_t received(const char *str, std::uint16_t strLen) noexcept override;
+
+        /**
 	 * @brief connected
 	 *
 	 * @return true
