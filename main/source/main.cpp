@@ -65,15 +65,21 @@ extern "C" void app_main(void) {
 
 
 extern "C" void app_main(){
+  ESP_LOGI("Program start","Program started!\n");
+  constexpr std::uint16_t delay_loop{20};
+  constexpr std::uint16_t delay_start{1000};
+  constexpr std::uint16_t bufSizer{100U};
+
+
 
   driver::serial::Esp32s3 usbSerial;
   usbSerial.init();
 
-  vTaskDelay(pdMS_TO_TICKS(2000)); // Delay 10ms.
+  vTaskDelay(pdMS_TO_TICKS(delay_start)); // Delay  1000ms.
 
   usbSerial.send("TEST\r\n");
 
-  constexpr std::size_t bufLen{100U};
+  constexpr std::size_t bufLen{bufSizer};
   std::uint8_t dataRecived[bufLen]{};
   gpio_output_enable(GPIO_NUM_1);
   gpio_output_enable(GPIO_NUM_2);
@@ -92,17 +98,20 @@ extern "C" void app_main(){
       const char byte{static_cast<char>(dataRecived[0U])};
       ESP_LOGI("main", "Received byte: %u", byte);
 
-        if ('1' == byte) {
+        if ('1' == byte) 
+        {  
           gpio_set_level(GPIO_NUM_1, 1);
           gpio_set_level(GPIO_NUM_2, 1);
           usbSerial.send("LED ON!n");
-        } else if ('0' == byte) {
+        } 
+        else if ('0' == byte) 
+        {
           gpio_set_level(GPIO_NUM_1, 0);
           gpio_set_level(GPIO_NUM_2, 0);
           usbSerial.send("LED OFF\n");
         }
       }
-    vTaskDelay(pdMS_TO_TICKS(10)); // Delay 10ms.
+    vTaskDelay(pdMS_TO_TICKS(delay_loop)); // Delay 20ms.
   }
  
 }
