@@ -20,6 +20,7 @@ Esp32s3::~Esp32s3() noexcept {
   if (myConnectionStatus) {
     uart_driver_delete(UART_NUM_0);
   }
+}
 
 bool Esp32s3::init() noexcept {
   uart_config_t uart_config = {
@@ -76,19 +77,17 @@ std::uint16_t Esp32s3::received(std::uint8_t *buf, std::uint16_t bufLen) noexcep
 
 
   size_t available_data = 0;
+
   uart_get_buffered_data_len(UART_NUM_0, &available_data);
   if (available_data == 0) {return 0U;}
 
   // Lokala variabeln bytesRead av typen int, eftersom ESP-IDF returnerar int
-  int bytesRead = uart_read_bytes(UART_NUM_0, buf, bufLen, pdMS_TO_TICKS(20));
+  int bytesRead = uart_read_bytes(UART_NUM_0, buf, bufLen, pdMS_TO_TICKS(delay_ms));
 
-  if (buf != nullptr && bufLen > 0) {
-    // PORT 17 GPIO UART_NUM_1 och en timeout på 20 millisekunder
-    bytesRead = uart_read_bytes(UART_NUM_1, buf, bufLen, pdMS_TO_TICKS(delay_ms));
-  }
+
 
   // Läs datan från UART_NUM_0
-  int bytesRead = uart_read_bytes(UART_NUM_0, buf, bufLen, pdMS_TO_TICKS(20));
+  bytesRead = uart_read_bytes(UART_NUM_0, buf, bufLen, pdMS_TO_TICKS(20));
   // Check data if 0 returns 0U.
   if (bytesRead < 0){return 0U;}
 
