@@ -24,7 +24,14 @@ public:
    * @brief Construct a new Esp32s3 object
    *
    */
-  Esp32s3() noexcept = default;
+  Esp32s3() noexcept 
+    :myState(false)
+    ,myPullup(false)
+    ,myDirection(0)
+    ,myPin(0)
+  {
+
+  }
 
   /**
    * @brief Turns output the Gpio_pin.
@@ -51,13 +58,19 @@ public:
    */
   void pullUpGpio(std::uint8_t pinNumber) noexcept override;
 
+  /**
+   * @brief Checks what status the GPIO port has.
+   * 
+   * @param pinNumber 
+   */
+  int checkGpio(std::uint8_t pinNumber) noexcept;
 
 private:
   /** GPIO state (true = high, false = low). */
 
   bool myState;
   bool myPullup;
-  const std::uint8_t myDirection;
-  const std::uint8_t myPin;
+  std::uint8_t myDirection;
+  std::uint8_t myPin;
 };
 } // namespace include::driver::gpio

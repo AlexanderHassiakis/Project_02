@@ -35,6 +35,9 @@ void Esp32s3::input(std::uint8_t pinNumber, bool state) noexcept {
 void Esp32s3::toggle(std::uint8_t pinNumber) noexcept {
   const gpio_num_t gpioNumber{static_cast<gpio_num_t>(pinNumber)};
 
+  //Needed to make Toggle work.
+  gpio_set_direction(gpioNumber, GPIO_MODE_INPUT_OUTPUT);
+
   if (gpio_get_level(gpioNumber)== 1) { gpio_set_level(gpioNumber,false); }
   else{gpio_set_level(gpioNumber, true);}
 }
@@ -47,6 +50,11 @@ void Esp32s3::pullUpGpio(std::uint8_t pinNumber) noexcept {
 
   std::printf("Pin %u is now set as pullup\n", pinNumber);
   ESP_LOGI("Pullup","Pullup %u\n",pinNumber);
+}
+
+int Esp32s3::checkGpio(std::uint8_t pinNumber) noexcept{
+  const gpio_num_t gpioNumber{static_cast<gpio_num_t>(pinNumber)};
+  return gpio_get_level(gpioNumber);
 }
 
 } // namespace driver::gpio
