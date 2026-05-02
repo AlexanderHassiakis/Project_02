@@ -1,7 +1,7 @@
 #pragma once
 
 #include <cstdint>
-#include "esp_log.h"           // För snygg debugging (ESP_LOGI)
+#include "esp_log.h"  // Debugg
 
 
 namespace driver::tempsensor {
@@ -13,6 +13,7 @@ public:
    int readTemperature() noexcept override
    {
 	return tempRead;
+   ESP_LOGI("STUB","%i",tempRead);
    }
 
    void setTemp(float temp) noexcept

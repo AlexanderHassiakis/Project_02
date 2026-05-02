@@ -6,7 +6,7 @@ class Interface {
 public:
   virtual ~Interface() = default;
 
-  virtual float readTemperature() noexcept = 0;
+  virtual int readTemperature() noexcept = 0;
 
 };
 } // namespace driver::sensor
