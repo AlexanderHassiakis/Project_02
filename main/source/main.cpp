@@ -11,8 +11,7 @@
 
 driver::gpio::Esp32s3 myGpio;
 
-constexpr std::uint8_t LED_PIN_1 = 1;
-constexpr std::uint8_t LED_PIN_2 = 2;
+constexpr std::uint8_t LED_PIN_1 = 48;
 
 constexpr std::uint32_t blinkSpeed_ms{500U};
 
@@ -22,7 +21,7 @@ extern "C" void app_main(void) {
 
   // Configure LED 1 & 2 as output.
   myGpio.output(LED_PIN_1,true);
-  myGpio.output(LED_PIN_2,false);
+
 
   
 
@@ -32,13 +31,11 @@ extern "C" void app_main(void) {
   while (1) {
     
     myGpio.toggle(LED_PIN_1);
-    myGpio.toggle(LED_PIN_2);
     std::printf("Toggel leds!\n");
     vTaskDelay(pdMS_TO_TICKS(blinkSpeed_ms));
 
     myGpio.toggle(LED_PIN_1);
-    myGpio.toggle(LED_PIN_2);
-    std::printf("Toggel leds!\n")
+    std::printf("Toggel leds!\n");
     vTaskDelay(pdMS_TO_TICKS(blinkSpeed_ms));
   }
 }

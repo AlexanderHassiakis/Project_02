@@ -4,9 +4,11 @@
 
 #include "driver/gpio/esp32s3.h"
 #include "driver/gpio.h"
+#include "esp_log.h"
+#include <cstdint>
 #include <cstdio>
 
-namespace driver::gpio {
+    namespace driver::gpio {
 
 
 
@@ -33,8 +35,8 @@ void Esp32s3::input(std::uint8_t pinNumber, bool state) noexcept {
 void Esp32s3::toggle(std::uint8_t pinNumber) noexcept {
   const gpio_num_t gpioNumber{static_cast<gpio_num_t>(pinNumber)};
 
-  myState = !myState;
-  gpio_set_level(gpioNumber, myState);
+  if (gpio_get_level(gpioNumber)== 1) { gpio_set_level(gpioNumber,false); }
+  else{gpio_set_level(gpioNumber, true);}
 }
 
 void Esp32s3::pullUpGpio(std::uint8_t pinNumber) noexcept {
@@ -44,6 +46,7 @@ void Esp32s3::pullUpGpio(std::uint8_t pinNumber) noexcept {
   gpio_set_pull_mode(gpioNumber, GPIO_PULLUP_ONLY);
 
   std::printf("Pin %u is now set as pullup\n", pinNumber);
+  ESP_LOGI("Pullup","Pullup %u\n",pinNumber);
 }
 
 } // namespace driver::gpio
