@@ -1,5 +1,5 @@
 #pragma once
-#include "driver/sensor/interface.h"
+#include "driver/tempsensor/interface.h"
 #include "esp_adc/adc_oneshot.h"
 #include <cstdint>
 
