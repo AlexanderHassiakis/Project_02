@@ -9,4 +9,4 @@ public:
   virtual int readTemperature() noexcept = 0;
 
 };
-} // namespace driver::sensor
+} // namespace driver::tempsensor

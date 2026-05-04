@@ -1,5 +1,5 @@
 #include "driver/tempsensor/tmp36.h"
-#include "driver/sensor/interface.h"
+#include "driver/tempsensor/interface.h"
 #include "esp_adc/adc_oneshot.h"
 #include "esp_log.h"
 #include <cstdint>
@@ -10,8 +10,8 @@ namespace driver::tempsensor {
 Tmp36::Tmp36(adc_channel_t channel) noexcept
     : m_channel(channel), m_adc_handle(nullptr) 
 {
-  	initAdc();
-	ESP_LOGI("TMP36", "ADC-resurser Skapade.");
+    initAdc();
+    ESP_LOGI("TMP36", "ADC-resurser Skapade.");
 }
 
 Tmp36::~Tmp36() {

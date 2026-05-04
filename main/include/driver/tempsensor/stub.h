@@ -3,6 +3,7 @@
 #include <cstdint>
 #include "esp_log.h"  // Debugg
 
+#include "driver/tempsensor/interface.h"
 
 namespace driver::tempsensor {
 class Stub final : public Interface {
