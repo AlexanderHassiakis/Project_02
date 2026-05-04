@@ -4,6 +4,11 @@
  * 
  */
 
+#pragma once
+#include <cstdbool>
+#include <cstdint>
+#include <cstdio>
+
 
 
 namespace system::logic
