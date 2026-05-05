@@ -7,3 +7,4 @@ Tilldelade:
 * serial = Alexander Hassiakis
 * Tempsensor = Alla i gruppen
 * GPIO = Alla i gruppen
+* Logic = Alla i gruppen
