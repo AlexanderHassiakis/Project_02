@@ -32,10 +32,7 @@ namespace include::driver::factory
 			return std::make_unique<timer::Stub>();
 		}
 
-		std::unique_ptr<tempsensor::Interface> tempSensor(
-			std::uint8_t pin,
-			adc::Interface& adcRef
-		) noexcept override
+		std::unique_ptr<tempsensor::Interface> tempSensor(std::uint8_t pin, adc::Interface& adcRef) noexcept override
 		{
 			return std::make_unique<tempsensor::Stub>(pin, adcRef);
 		}
