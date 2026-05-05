@@ -1,11 +1,20 @@
 // Main file //
 /**
- * @brief GPIO example.
+ * @brief Stub example.
  */
+#include <chrono>
 #include <cstdint>
+#include <cstdio>
+#include <cstring>
 
-#include <freertos/FreeRTOS.h>
-#include <freertos/task.h>
+
+#include "driver/gpio.h"
+#include "esp_log.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+
+
+#include "driver/serial/esp32s3.h"
 
 #include "driver/gpio/direction.h"
 #include "driver/gpio/esp32s3.h"
