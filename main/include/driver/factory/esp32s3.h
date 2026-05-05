@@ -32,11 +32,7 @@ namespace driver::factory
 				ESP_LOGI(TAG,"Factory destroyed!\n")
 			}
 
-			std::unique_ptr<gpio::Interface> gpio(std::uint8_t pin) noexcept override
-			{
-				return std::make_unique<gpio::Esp32s3>(pin);
-				ESP_LOGI(TAG,"GPIO PIN WORKING!");
-			}
+			std::unique_ptr<gpio::Interface> gpio(std::uint8_t pin) noexcept override;
 
 
 			Esp32s3(const Esp32s3&)            = delete;
