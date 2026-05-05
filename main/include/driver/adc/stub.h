@@ -16,11 +16,12 @@ public:
         // Check if adcMax is 0, if so, use default value 4095.
         , myAdcMax{0U != adcMax ? adcMax : DefaultAdcMax}
         , myRawValue{}
+        , myInitialized{true}
     {}
 
      bool isInitialized() const noexcept override
      {
-        // Return true;
+        return myInitialized;
      }
 
      std::uint16_t readRaw(std::uint8_t pin) noexcept override
@@ -30,7 +31,7 @@ public:
         return myRawValue;
      }
 
-     std::float readVoltage(std::uint8_t pin) noexcept override
+     float readVoltage(std::uint8_t pin) noexcept override
      {
         // Pin number is not applicable for stubs, ignore.
         (void) (pin);
@@ -42,7 +43,7 @@ public:
         return ratio * mySupplyVoltage;
      }
 
-     // voltage = raw / ADC_MAX.
+     // voltage = (raw / ADC_MAX) * supply voltage
 
     void simulateRaw(const std::uint16_t rawValue) noexcept 
     { 
@@ -63,6 +64,8 @@ private:
 
      /** Simulated raw value. */
      std::uint16_t myRawValue;
+
+     const bool myInitialized;
 };
 } // namespace driver::adc
 
