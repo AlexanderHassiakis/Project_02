@@ -65,7 +65,7 @@ namespace driver::tempsensor {
         if (err != ESP_OK) {
             ESP_LOGE("TMP36", "Misslyckades att initiera ADC: %s", esp_err_to_name(err));
             return;
-        } // Rekommederad av AI, behövs?
+        }
 
         adc_oneshot_chan_cfg_t config = {};
         config.bitwidth = ADC_BITWIDTH_DEFAULT;
@@ -74,7 +74,7 @@ namespace driver::tempsensor {
         err = adc_oneshot_config_channel(m_adc_handle, m_channel, &config);
         if (err != ESP_OK) {
             ESP_LOGE("TMP36", "Misslyckades att konfigurera ADC-kanal: %s", esp_err_to_name(err));
-        } // Rekommederad av AI, behövs?
+        } 
 
     }
 
