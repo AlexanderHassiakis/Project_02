@@ -45,10 +45,6 @@ namespace include::driver::factory
          * @param pin ADC pin
          * @param adc ADC reference
          */
-        virtual std::unique_ptr<tempsensor::Interface> tempSensor(
-            std::uint8_t pin,
-            adc::Interface& adc
-        ) noexcept = 0;
+        virtual std::unique_ptr<tempsensor::Interface> tempSensor(std::uint8_t pin, adc::Interface& adc) noexcept = 0;
     };
-
 } // namespace include::driver::factory

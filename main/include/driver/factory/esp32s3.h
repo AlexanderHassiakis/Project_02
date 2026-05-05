@@ -6,27 +6,33 @@
 #include "driver/timer/esp32s3.h"
 #include "driver/tempsensor/tmp36.h"
 
-namespace driver::factory {
-
-class Esp32s3 : public Interface {
+namespace driver::factory 
+{
+class Esp32s3 : public Interface 
+{
 public:
-    std::unique_ptr<adc::Interface> adc() noexcept override {
+    std::unique_ptr<adc::Interface> adc() noexcept override 
+    {
         return std::make_unique<adc::Esp32s3>();
     }
 
-    std::unique_ptr<gpio::Interface> gpio(std::uint8_t pin) noexcept override {
+    std::unique_ptr<gpio::Interface> gpio(std::uint8_t pin) noexcept override 
+    {
         return std::make_unique<gpio::Esp32s3>(pin);
     }
 
-    std::unique_ptr<serial::Interface> serial() noexcept override {
+    std::unique_ptr<serial::Interface> serial() noexcept override 
+    {
         return std::make_unique<serial::Esp32s3>();
     }
 
-    std::unique_ptr<timer::Interface> timer() noexcept override {
+    std::unique_ptr<timer::Interface> timer() noexcept override 
+    {
         return std::make_unique<timer::Esp32s3>();
     }
 
-    std::unique_ptr<tempsensor::Interface> tempSensor(std::uint8_t pin, adc::Interface& adc) noexcept override {
+    std::unique_ptr<tempsensor::Interface> tempSensor(std::uint8_t pin, adc::Interface& adc) noexcept override 
+    {
         return std::make_unique<tempsensor::Tmp36>(pin, adc);
     }
 };
