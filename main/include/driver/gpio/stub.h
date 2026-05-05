@@ -5,87 +5,46 @@
  */
 #pragma once
 
-#include <cstdint>
-#include <cstdio>
-
-#include "driver/gpio/direction.h"
 #include "driver/gpio/interface.h"
 
 namespace driver::gpio
 {
-	class Stub final : public Interface
-	{
-	public:
-		/**
-		 * @brief Destructor.
-		 */
-		 ~Stub() noexcept = default;
+class Stub final : public Interface
+{
+public:
+	/**
+	 * @brief Destructor.
+	 */
+		~Stub() noexcept = default;
 
-		/**
-		 * @brief Construct a new Stub object
-		 * 
-		 */
-		 Stub() noexcept = default;
+	/**
+	 * @brief Construct a new Stub object
+	 * 
+	 */
+		Stub() noexcept
+			: myState{false}
+		{}
 
-		/**
-		 * @brief Turns output the Gpio_pin.
-		 * @param [in] GPIO pinnumber.
-		 */
-		 void output(std::uint8_t pinNumber,bool state) noexcept override
-		 {
+	/**
+	 * @brief Set GPIO output.
+	 *
+	 * @param [in] state GPIO state (true = high, false = low).
+	 */
+	void output(bool state) noexcept override { myState = state; }
+	/**
+	 * @brief Read GPIO input.
+	 *
+	 * @return GPIO state (true = high, false = low).
+	 */
+	bool input() const noexcept { return myState; }
 
-			std::printf("%s",pinNumber,"Is now set as output");
-			myState = state;
-			myPin = pinNumber;
-			myDirection = Direction::output;
-		 }
-
-		/**
-		 * @brief Turns input the Gpio_pin.
-		 * @param [in] GPIO pinnumber.
-		 */
-		 void input(std::uint8_t pinNumber, bool state) noexcept override
-		 {
-			std::printf("%s",pinNumber,"Is now set as input");
-			myState = state;
-			myPin = pinNumber;
-			myDirection = Direction::input;
-			myPullup = false;
-		 }
-
-		/**
-		 * @brief Turns on Toggle
-		 * @param [in] GPIO pinnumber.
-		 */
-		 void toggle(std::uint8_t pinNumber) noexcept override
-		 {
-			std::printf("%s",pinNumber,"Toggels GPIO if false turns true and false if true before.");
-			if (myState){myState = false;}
-			else{myState = true;}
-		
-		 }
-
-		/**
-		 * @brief Pullup resistor
-		 * @param [in] GPIO pinnumber.
-		 */
-		 void pullUpGpio(std::uint8_t pinNumber) noexcept override
-		 {
-			std::printf("%s",pinNumber,"Internal pull up resistor activated and set pin to input.");
-			myState = state;
-			myPin = pinNumber;
-			myDirection = Direction::input;
-			myPullup = true;
-
-		 }
+	/**
+	 * @brief Toggle GPIO state.
+	 */
+	void toggle() noexcept { myState = !myState; }
 		 
-		private:
-		    /** GPIO state (true = high, false = low). */
-			bool myState;
-			bool myPullup;
-			const std::uint8_t myDirection;
-			const std::uint8_t myPin;
-
-		
-	};
-}
+private:
+	/** GPIO state (true = high, false = low). */
+	bool myState;
+};
+} // namespace driver::gpio
