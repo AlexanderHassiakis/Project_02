@@ -27,7 +27,7 @@ namespace driver::serial {
 
     Esp32s3::~Esp32s3() noexcept {
     if (myConnectionStatus) {
-    uart_driver_delete(UART_NUM_0);
+    usb_serial_jtag_driver_uninstall();
     }
     }
 
