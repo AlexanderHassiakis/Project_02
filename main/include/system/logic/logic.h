@@ -27,14 +27,14 @@ namespace system::logic
 			,myLed{factory.gpio(4)}
 			,myTimer{factory.timer()}
 			,myAdc{factory.adc()}
-			,myWatch{factory.delay_ms>()}
+			,myWatch{factory.watchdog()} 
 		{
 			/*Initialisera hårdvara*/
 			if(mySerial){mySerial->init();}
 			if(myLed){myLed->output(false);}
 			if(myTimer){myTimer->setPeriod(500);}
 			if(myAdc){myTemp = factory.tempSensor(1,*myAdc);}
-			if(myWatch){myWatch->delay_ms()}
+			if(myWatch){myWatch->delay_ms(0);} // Default value.
 		}
 
 		/**
@@ -56,39 +56,56 @@ namespace system::logic
 
 						rxBuffer[strcspn(rxBuffer, "\r\n")] = 0; // Letar efter /r /n i buffer och ersätter med en nolla.
 
-						if(strcmp(rxBuffer, "on") == 0)
+						if(strcmp(rxBuffer,"on") == 0)
 						{
 							isBlinking = false;
 							myLed->output(true);
-							mySerial->("Led is constant ON!\n");
+							mySerial->send("Led is constant ON!\n");
 						}
-						else if (strcmp(rxBuffer, "off") == 0)
+						else if (strcmp(rxBuffer,"off") == 0)
 						{
 							isBlinking = false;
 							myLed->output(false);
-							mySerial->send("LEd is OFF!\n");
+							mySerial->send("LED is OFF!");
 						}
-						else if (strcmp(rxBuffer, "blink") == 0)
+						else if (strcmp(rxBuffer,"blink") == 0)
 						{
 							isBlinking = true;
 							myTimer->start();
-							mySerial->("Blinking Started\n");
+							mySerial->send("Blinking Started\n");
 						}
-						else if (strcmp(rxBuffer, "Temp") == 0)
+						else if (strcmp(rxBuffer,"Temp") == 0)
 						{
 							if(myTemp){
 								char msg[32];
-								int t = myTemp->readTemprature();
+								int t = myTemp->readTemperature();
 								snprintf(msg, sizeof(msg), "Temperature: %d C\n", t);
 								mySerial->send(msg);
 							}
 						}
-						else if (strcmp(rxBuffer, "blink off\n") == 0)
+						else if (strcmp(rxBuffer,"blink off") == 0)
 						{
-							isBlinking = true;
+							isBlinking = false;
 							myTimer->stop();
-							mySerial->("Blinking stopped\n");
+							mySerial->send("Blinking stopped\n");
 						}
+						else if (strcmp(rxBuffer,"status") == 0)
+						{
+							char msg[128];
+							int t = static_cast<int>(myTemp->readTemperature());
+							const char* binkStr = isBlinking ? "ON" : "OFF";
+							snprintf(msg, sizeof(msg), 	"\n-----STATUS-----\n "
+														"Temperature: %d C\n"
+														"Blink mode: %s\n",
+														t,blinkStr);
+							mySerial->send(msg);
+
+							int ledLevel = myLed->input(); // When output is true, input will act as a gpio status provider.
+							const char* ledStr =(ledLevel == 1) ? "High" : "Low";
+							snprintf(msg,sizeof(msg), "LED Level: %s\n", ledStr);
+							mySerial->send(msg);
+						}
+						
 						
 						
 						
@@ -97,8 +114,8 @@ namespace system::logic
 				}
 				
 				if (isBlinking && myTimer && myTimer->isTimeout()){myLed->toggle();}
-
-				myWatch.delay(10);
+				if(myWatch){myWatch->delay_ms(10);} // Watchdog delay.
+				
 			}
 			
 
@@ -106,10 +123,11 @@ namespace system::logic
 
 		private:
 		std::unique_ptr<driver::serial::Interface> mySerial;
-		std::unique_ptr<driver::gpio::Interface myLed;
-		std::unique_ptr<driver::timer::Interface myTimer;
-		std::unique_ptr<driver::tempsensor::Interface myTemp;
-		std::unique_ptr<driver::adc::Interface myADC;
+		std::unique_ptr<driver::gpio::Interface> myLed;
+		std::unique_ptr<driver::timer::Interface> myTimer;
+		std::unique_ptr<driver::tempsensor::Interface> myTemp;
+		std::unique_ptr<driver::adc::Interface> myAdc;
+		std::unique_ptr<driver::watchdog::Interface> myWatch;
 
 	};
 } // namespace system::logic

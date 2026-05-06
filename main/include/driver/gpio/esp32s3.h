@@ -45,8 +45,7 @@ public:
      */
     void toggle() noexcept override;
 
-private:
-  const Direction myDirection;
-  const std::uint8_t myPin;
+    private : const Direction myDirection;
+    const std::uint8_t myPin;
 };
 } // namespace include::driver::gpio
