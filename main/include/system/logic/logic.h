@@ -55,26 +55,29 @@ namespace system::logic
 						rxBuffer[bytes] = '\0';
 
 						rxBuffer[strcspn(rxBuffer, "\r\n")] = 0; // Letar efter /r /n i buffer och ersätter med en nolla.
-
+						//---------LED ON---------//
 						if(strcmp(rxBuffer,"on") == 0)
 						{
 							isBlinking = false;
 							myLed->output(true);
 							mySerial->send("Led is constant ON!\n");
 						}
+						//---------LED OFF---------//
 						else if (strcmp(rxBuffer,"off") == 0)
 						{
 							isBlinking = false;
 							myLed->output(false);
 							mySerial->send("LED is OFF!");
 						}
+						//---------LED BLINK ON---------//
 						else if (strcmp(rxBuffer,"blink") == 0)
 						{
 							isBlinking = true;
 							myTimer->start();
 							mySerial->send("Blinking Started\n");
 						}
-						else if (strcmp(rxBuffer,"Temp") == 0)
+						//---------READ TEMP---------//
+						else if (strcmp(rxBuffer,"temp") == 0)
 						{
 							if(myTemp){
 								char msg[32];
@@ -83,12 +86,14 @@ namespace system::logic
 								mySerial->send(msg);
 							}
 						}
+						//---------LED BLINK OFF---------//
 						else if (strcmp(rxBuffer,"blink off") == 0)
 						{
 							isBlinking = false;
 							myTimer->stop();
 							mySerial->send("Blinking stopped\n");
 						}
+						//---------TOTAL STATUS---------//
 						else if (strcmp(rxBuffer,"status") == 0)
 						{
 							char msg[128];
@@ -99,26 +104,33 @@ namespace system::logic
 														"Blink mode: %s\n",
 														t,blinkStr);
 							mySerial->send(msg);
-
 							int ledLevel = myLed->input(); // When output is true, input will act as a gpio status provider.
 							const char* ledStr =(ledLevel == 1) ? "High" : "Low";
 							snprintf(msg,sizeof(msg), "LED Level: %s\n", ledStr);
 							mySerial->send(msg);
 						}
-						
-						
-						
-						
+						//---------DELAY COMMAND PARSING OF VALUE---------//
+						else if (strncmp(rxBuffer,"period", 7) == 0)
+						{
+							int newDelay{0};
+							if (sscanf(rxBuffer + 7,"%d", &newDelay) == 1)
+							{
+								if(myTimer)
+								{
+									myTimer->setPeriod(newDelay);
+									char msg[32];
+									snprintf(msg,sizeof(msg),"Delay set to %d ms\n",newDelay);
+									mySerial->send(msg);
+								}
+							}
+						}
 					}
 					
 				}
 				
 				if (isBlinking && myTimer && myTimer->isTimeout()){myLed->toggle();}
 				if(myWatch){myWatch->delay_ms(10);} // Watchdog delay.
-				
 			}
-			
-
 		}
 
 		private:
