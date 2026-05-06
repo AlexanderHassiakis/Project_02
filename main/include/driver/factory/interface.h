@@ -22,12 +22,12 @@ namespace include::driver::factory
         /**
          * @brief Create ADC driver.
          */
-        virtual std::unique_ptr<adc::Interface> adc() noexcept = 0;
+        virtual std::unique_ptr<adc::Interface> adc(std::uint8_t pin) noexcept = 0;
 
         /**
          * @brief Create GPIO driver.
          */
-        virtual std::unique_ptr<gpio::Interface> gpio() noexcept = 0;
+        virtual std::unique_ptr<gpio::Interface> gpio(std::uint8_t pin) noexcept = 0;
 
         /**
          * @brief Create Serial driver.

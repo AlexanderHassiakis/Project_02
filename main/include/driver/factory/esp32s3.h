@@ -11,9 +11,9 @@ namespace driver::factory
 class Esp32s3 : public Interface 
 {
 public:
-    std::unique_ptr<adc::Interface> adc() noexcept override 
+    std::unique_ptr<adc::Interface> adc(std::uint8_t pin)) noexcept override 
     {
-        return std::make_unique<adc::Esp32s3>();
+        return std::make_unique<adc::Esp32s3>(pin);
     }
 
     std::unique_ptr<gpio::Interface> gpio(std::uint8_t pin) noexcept override 
