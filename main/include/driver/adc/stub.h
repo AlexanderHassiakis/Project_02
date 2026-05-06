@@ -1,3 +1,8 @@
+/**
+ * @file stub.h
+ * @brief Stub ADC driver used for simulation and testing.
+ */
+
 #pragma once
 
 #include <cstdint>
@@ -6,9 +11,20 @@
 
 namespace driver::adc
 {
+/**
+ * @brief Stub implementation of the ADC interface.
+ *
+ * This class simulates a single ADC reading without any hardware dependency.
+ */
 class Stub final : public Interface 
 {
 public:
+    /**
+     * @brief Construct the stub ADC driver.
+     *
+     * @param adcMax Maximum raw ADC value used for conversions.
+     * @param supplyVoltage Reference voltage used for conversions.
+     */
     explicit Stub(const std::uint16_t adcMax = DefaultAdcMax,
                   const float supplyVoltage = DefaultVoltage) noexcept
         // Check if supply voltage is >= 0.0, if so, use default value 3.3
@@ -19,11 +35,22 @@ public:
         , myInitialized{true}
     {}
 
+     /**
+      * @brief Check if the stub is initialized.
+      *
+      * @return Always `true` for the current stub implementation.
+      */
      bool isInitialized() const noexcept override
      {
         return myInitialized;
      }
 
+     /**
+      * @brief Return the simulated raw ADC value.
+      *
+      * @param pin ADC pin to read.
+      * @return Simulated raw ADC value.
+      */
      std::uint16_t readRaw(std::uint8_t pin) noexcept override
      {
         // Pin number is not applicable for stubs, ignore.
@@ -31,6 +58,12 @@ public:
         return myRawValue;
      }
 
+     /**
+      * @brief Convert the simulated raw ADC value to volts.
+      *
+      * @param pin ADC pin to read.
+      * @return Simulated voltage in volts.
+      */
      float readVoltage(std::uint8_t pin) noexcept override
      {
         // Pin number is not applicable for stubs, ignore.
@@ -45,6 +78,13 @@ public:
 
      // voltage = (raw / ADC_MAX) * supply voltage
 
+    /**
+     * @brief Set the simulated raw ADC value.
+     *
+     * Values above the configured ADC maximum are ignored.
+     *
+     * @param rawValue Simulated raw ADC value.
+     */
     void simulateRaw(const std::uint16_t rawValue) noexcept 
     { 
         // Check given raw value, ignore if above the max limit.
@@ -68,5 +108,3 @@ private:
      const bool myInitialized;
 };
 } // namespace driver::adc
-
-
