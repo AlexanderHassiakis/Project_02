@@ -83,6 +83,12 @@ namespace system::logic
 								mySerial->send(msg);
 							}
 						}
+						else if (strcmp(rxBuffer, "blink off\n") == 0)
+						{
+							isBlinking = true;
+							myTimer->stop();
+							mySerial->("Blinking stopped\n");
+						}
 						
 						
 						
