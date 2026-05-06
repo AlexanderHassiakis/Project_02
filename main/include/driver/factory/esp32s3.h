@@ -5,6 +5,7 @@
 #include "driver/serial/esp32s3.h"
 #include "driver/timer/esp32s3.h"
 #include "driver/tempsensor/tmp36.h"
+#include "driver/watchdog/esp32s3.h"
 
 namespace driver::factory 
 {
@@ -34,6 +35,11 @@ public:
     std::unique_ptr<tempsensor::Interface> tempSensor(std::uint8_t pin, adc::Interface& adc) noexcept override 
     {
         return std::make_unique<tempsensor::Tmp36>(pin, adc);
+    }
+
+    std::unique_ptr<watchdog::Interface> delay_ms(std::uint16_t ms) noexcept override
+    {
+        return std::make_unique<watchdog::Esp32s3>(ms);
     }
 };
 

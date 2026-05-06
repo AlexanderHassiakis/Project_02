@@ -8,6 +8,7 @@
 #include "driver/serial/interface.h"
 #include "driver/tempsensor/interface.h"
 #include "driver/timer/interface.h"
+#include "driver/watchdog/interface.h"
 
 namespace include::driver::factory
 {
@@ -40,11 +41,20 @@ namespace include::driver::factory
         virtual std::unique_ptr<timer::Interface> timer() noexcept = 0;
 
         /**
-         * @brief Create temperature sensor.
+         * @brief Watchdog func
          * 
-         * @param pin ADC pin
-         * @param adc ADC reference
+         * @param ms 
+         * @return std::unique_ptr<watchdog::Interface> 
          */
-        virtual std::unique_ptr<tempsensor::Interface> tempSensor(std::uint8_t pin, adc::Interface& adc) noexcept = 0;
+        virtual std::unique_ptr<watchdog::Interface> delay_ms(std::uint16_t ms) noexcept = 0;
+
+            /**
+             * @brief Create temperature sensor.
+             *
+             * @param pin ADC pin
+             * @param adc ADC reference
+             */
+            virtual std::unique_ptr<tempsensor::Interface>
+            tempSensor(std::uint8_t pin, adc::Interface &adc) noexcept = 0;
     };
 } // namespace include::driver::factory

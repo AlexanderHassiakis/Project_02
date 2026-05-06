@@ -3,9 +3,7 @@
 #include <cstring>
 #include <memory>
 
-//För ESP32 Delay
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
+
 
 #include "driver/factory/interface.h"
 #include "driver/serial/interface.h"
@@ -13,6 +11,7 @@
 #include "driver/timer/interface.h"
 #include "driver/adc/interface.h"
 #include "driver/tempsensor/interface.h"
+#include "driver/watchdog/interface.h"
 
 namespace system::logic
 {
@@ -24,18 +23,18 @@ namespace system::logic
 		 * @param factory 
 		 */
 		explicit Logic(driver::factory::Interface& factory)
+			: mySerial{factory.serial()}
+			,myLed{factory.gpio(4)}
+			,myTimer{factory.timer()}
+			,myAdc{factory.adc()}
+			,myWatch{factory.delay_ms>()}
 		{
-			/*skapar driver via factory*/
-			mySerial = factory.serial();
-			myLed = factory.gpio(4);
-			myTimer = factory.timer();
-			myAdc = factory.adc();
-
 			/*Initialisera hårdvara*/
 			if(mySerial){mySerial->init();}
 			if(myLed){myLed->output(false);}
 			if(myTimer){myTimer->setPeriod(500);}
 			if(myAdc){myTemp = factory.tempSensor(1,*myAdc);}
+			if(myWatch){myWatch->delay_ms()}
 		}
 
 		/**
@@ -55,7 +54,7 @@ namespace system::logic
 					{
 						rxBuffer[bytes] = '\0';
 
-						rxBuffer[strcspn(rxBuffer, "\r\n")] = 0;
+						rxBuffer[strcspn(rxBuffer, "\r\n")] = 0; // Letar efter /r /n i buffer och ersätter med en nolla.
 
 						if(strcmp(rxBuffer, "on") == 0)
 						{
@@ -79,8 +78,8 @@ namespace system::logic
 						{
 							if(myTemp){
 								char msg[32];
-								float t = myTemp->readTemprature();
-								snprintf(msg, sizeof(msg), "Temperature: %.2f C\n", t);
+								int t = myTemp->readTemprature();
+								snprintf(msg, sizeof(msg), "Temperature: %d C\n", t);
 								mySerial->send(msg);
 							}
 						}
@@ -93,10 +92,7 @@ namespace system::logic
 				
 				if (isBlinking && myTimer && myTimer->isTimeout()){myLed->toggle();}
 
-				// Detta är "Watchdog-matningen".
-        		// pdMS_TO_TICKS(10) säger till systemet: 
-        		// "Jag pausar i 10 millisekunder, låt andra processer köra."
-				vTaskDelay(pdMS_TO_TICKS(10)); // Delay for loopen.
+				myWatch.delay(10);
 			}
 			
 

@@ -5,6 +5,7 @@
 #include "driver/serial/stub.h"
 #include "driver/tempsensor/stub.h"
 #include "driver/timer/stub.h"
+#include "driver/watchdog/stub.h"
 
 namespace include::driver::factory
 {
@@ -47,6 +48,11 @@ namespace include::driver::factory
 		std::unique_ptr<tempsensor::Interface> tempSensor(std::uint8_t pin, adc::Interface& adcRef) noexcept override
 		{
 			return std::make_unique<tempsensor::Stub>(pin, adcRef);
+		}
+
+        std::unique_ptr<watchdog::Interface> delay_ms(std::uint16_t ms) noexcept override
+		{
+			return std::make_unique<watchdog::Stub>(ms);
 		}
 	};
 
