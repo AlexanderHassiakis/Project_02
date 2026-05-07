@@ -29,7 +29,7 @@ namespace system::logic
 			,myAdc{factory.adc()}
 			,myWatch{factory.watchdog()} 
 		{
-			/*Initialisera hårdvara*/
+			/*Initialize hardware*/
 			if(mySerial){mySerial->init();}
 			if(myLed){myLed->output(false);}
 			if(myTimer){myTimer->setPeriod(500U);}
@@ -46,6 +46,7 @@ namespace system::logic
 			char rxBuffer[64];
 			bool isBlinking{false};
 			char menu[128];
+			/*Menu for terminal commands.*/
 			snprintf(msg, sizeof(msg), 	"\n-----Commands-----\n"
 										"Temp\n"
 										"blink\n"
@@ -56,6 +57,7 @@ namespace system::logic
 										"period x \n");
 			meSerial->send(menu);
 
+			/**Logic Loop */
 			while (true)
 			{
 				if (mySerial)
@@ -138,8 +140,10 @@ namespace system::logic
 					}
 					
 				}
-				
-				if (isBlinking && myTimer && myTimer->isTimeout()){myLed->toggle();}
+
+				/** If isBlinking & myTimer & isTimeout is true, The led will toggle on or off**/
+				if (isBlinking && myTimer && myTimer->isTimeout()){myLed->toggle();} 
+				/**Watchdog for Logic.**/
 				if(myWatch){myWatch->delay_ms(10U);} // Watchdog delay.
 			}
 		}
