@@ -10,13 +10,27 @@
 #include "driver/timer/interface.h"
 #include "driver/watchdog/interface.h"
 
+namespace driver
+{
+	namespace gpio{class Interface;}
+	namespace adc{class Interface;}
+	namespace serial{class Interface;}
+	namespace tempsensor{class Interface;}
+	namespace timer{class Interface;}	
+    namespace watchdog{class Interface;}
+    
+} // namespace driver
+
+
+
 namespace driver::factory
 {
     class Interface
     {
     public:
         /**
-         * @brief Destructor.
+         * @brief Destructor
+         * 
          */
         virtual ~Interface() noexcept = default;
 
@@ -48,13 +62,13 @@ namespace driver::factory
          */
         virtual std::unique_ptr<watchdog::Interface> delay_ms(std::uint16_t ms) noexcept = 0;
 
-            /**
-             * @brief Create temperature sensor.
-             *
-             * @param pin ADC pin
-             * @param adc ADC reference
-             */
-            virtual std::unique_ptr<tempsensor::Interface>
-            tempSensor(std::uint8_t pin, adc::Interface &adc) noexcept = 0;
+        /**
+         * @brief Create temperature sensor.
+         *
+         * @param pin ADC pin
+         * @param adc ADC reference
+         */
+        virtual std::unique_ptr<tempsensor::Interface>
+        tempSensor(std::uint8_t pin, adc::Interface &adc) noexcept = 0;
     };
 } // namespace include::driver::factory

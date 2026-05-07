@@ -1,3 +1,6 @@
+#include <cstdint>
+#include <memory>
+
 #include "driver/factory/esp32s3.h"
 
 #include "driver/adc/esp32s3.h"
