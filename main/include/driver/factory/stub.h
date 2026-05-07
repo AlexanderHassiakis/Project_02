@@ -1,5 +1,6 @@
 #pragma once
 #include <cstdint>
+#include <memory>
 
 #include "driver/adc/stub.h"
 #include "driver/gpio/stub.h"
