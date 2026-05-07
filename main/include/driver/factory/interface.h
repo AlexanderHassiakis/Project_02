@@ -10,7 +10,7 @@
 #include "driver/timer/interface.h"
 #include "driver/watchdog/interface.h"
 
-namespace include::driver::factory
+namespace driver::factory
 {
     class Interface
     {

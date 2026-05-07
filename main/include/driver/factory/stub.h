@@ -1,4 +1,5 @@
 #pragma once
+#include <cstdint>
 
 #include "driver/adc/stub.h"
 #include "driver/gpio/stub.h"
@@ -7,7 +8,7 @@
 #include "driver/timer/stub.h"
 #include "driver/watchdog/stub.h"
 
-namespace include::driver::factory
+namespace driver::factory
 {
 	class Stub : public Interface
 	{

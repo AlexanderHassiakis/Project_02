@@ -1,5 +1,9 @@
-#include "driver/factory/interface.h"
+#pragma once
 
+#include <cstdint>
+#include <memory>
+
+#include "driver/factory/interface.h"
 #include "driver/adc/esp32s3.h"
 #include "driver/gpio/esp32s3.h"
 #include "driver/serial/esp32s3.h"
@@ -12,7 +16,8 @@ namespace driver::factory
 class Esp32s3 : public Interface 
 {
 public:
-    std::unique_ptr<adc::Interface> adc(std::uint8_t pin)) noexcept override 
+
+    std::unique_ptr<adc::Interface> adc(std::uint8_t pin) noexcept override 
     {
         return std::make_unique<adc::Esp32s3>(pin);
     }
