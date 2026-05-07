@@ -1,7 +1,8 @@
-#pragma once 
 
 #include "driver/adc/interface.h"
 #include "esp_adc/adc_oneshot.h"
+#include "esp_log.h"
+#include "driver/adc/esp32s3.h"
 
 namespace driver::adc
 {
@@ -30,7 +31,7 @@ bool init() noexcept {
 
     // If initialization fails, log error and return false
     if (err != ESP_OK) {
-        ESP_LOGE("ESP32-S3 ADC driver", "failed to initiate ADC: %s", esp_err_to_name(err));
+        ESP_LOGI("ESP32-S3 ADC driver", "failed to initiate ADC: %s", esp_err_to_name(err));
         return false;
     }
 
@@ -53,7 +54,7 @@ Esp32s3::Esp32s3() noexcept
 // Destructor, reset the Pin
 Esp32s3::~Esp32s3() noexcept 
 {
-    adc_oneshot_del_unit(myHandle)
+    adc_oneshot_del_unit(myHandle);
 }
 
 // Check if ADC initialized successfully
