@@ -7,12 +7,10 @@
 #include <cstdio>
 #include <cstring>
 
-
 #include "driver/gpio.h"
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
-
 
 #include "driver/serial/esp32s3.h"
 
