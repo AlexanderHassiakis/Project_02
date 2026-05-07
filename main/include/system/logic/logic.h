@@ -24,7 +24,7 @@ namespace system::logic
 		 */
 		explicit Logic(driver::factory::Interface& factory)
 			: mySerial{factory.serial()}
-			,myLed{factory.gpio(4)}
+			,myLed{factory.gpio(4U)}
 			,myTimer{factory.timer()}
 			,myAdc{factory.adc()}
 			,myWatch{factory.watchdog()} 
@@ -32,9 +32,9 @@ namespace system::logic
 			/*Initialisera hårdvara*/
 			if(mySerial){mySerial->init();}
 			if(myLed){myLed->output(false);}
-			if(myTimer){myTimer->setPeriod(500);}
+			if(myTimer){myTimer->setPeriod(500U);}
 			if(myAdc){myTemp = factory.tempSensor(1,*myAdc);}
-			if(myWatch){myWatch->delay_ms(0);} // Default value.
+			if(myWatch){myWatch->delay_ms(0U);} // Default value.
 		}
 
 		/**
@@ -45,39 +45,51 @@ namespace system::logic
 		{
 			char rxBuffer[64];
 			bool isBlinking{false};
+			char menu[128];
+			snprintf(msg, sizeof(msg), 	"\n-----Commands-----\n"
+										"Temp\n"
+										"blink\n"
+										"blink off\n"
+										"on = LED ON\n"
+										"off = LED OFF\n"
+										"status\n"
+										"period x \n");
+			meSerial->send(menu);
+
+
 			while (true)
 			{
 				if (mySerial)
 				{
 					uint16_t bytes = mySerial->received(reinterpret_cast<uint8_t*>(rxBuffer), sizeof(rxBuffer) -1);
-					if (bytes > 0)
+					if (bytes > 0U)
 					{
 						rxBuffer[bytes] = '\0';
 
 						rxBuffer[strcspn(rxBuffer, "\r\n")] = 0; // Letar efter /r /n i buffer och ersätter med en nolla.
 						//---------LED ON---------//
-						if(strcmp(rxBuffer,"on") == 0)
+						if(strcmp(rxBuffer,"on") == 0U)
 						{
 							isBlinking = false;
 							myLed->output(true);
 							mySerial->send("Led is constant ON!\n");
 						}
 						//---------LED OFF---------//
-						else if (strcmp(rxBuffer,"off") == 0)
+						else if (strcmp(rxBuffer,"off") == 0U)
 						{
 							isBlinking = false;
 							myLed->output(false);
 							mySerial->send("LED is OFF!");
 						}
 						//---------LED BLINK ON---------//
-						else if (strcmp(rxBuffer,"blink") == 0)
+						else if (strcmp(rxBuffer,"blink") == 0U)
 						{
 							isBlinking = true;
 							myTimer->start();
 							mySerial->send("Blinking Started\n");
 						}
 						//---------READ TEMP---------//
-						else if (strcmp(rxBuffer,"temp") == 0)
+						else if (strcmp(rxBuffer,"temp") == 0U)
 						{
 							if(myTemp){
 								char msg[32];
@@ -87,14 +99,14 @@ namespace system::logic
 							}
 						}
 						//---------LED BLINK OFF---------//
-						else if (strcmp(rxBuffer,"blink off") == 0)
+						else if (strcmp(rxBuffer,"blink off") == 0U)
 						{
 							isBlinking = false;
 							myTimer->stop();
 							mySerial->send("Blinking stopped\n");
 						}
 						//---------TOTAL STATUS---------//
-						else if (strcmp(rxBuffer,"status") == 0)
+						else if (strcmp(rxBuffer,"status") == 0U)
 						{
 							char msg[128];
 							int t = static_cast<int>(myTemp->readTemperature());
@@ -109,8 +121,8 @@ namespace system::logic
 							snprintf(msg,sizeof(msg), "LED Level: %s\n", ledStr);
 							mySerial->send(msg);
 						}
-						//---------DELAY COMMAND PARSING OF VALUE---------//
-						else if (strncmp(rxBuffer,"period", 7) == 0)
+						//---------PARSING COMMAD FOR CHANGING THE DELAY---------//
+						else if (strncmp(rxBuffer,"period", 7) == 0U)
 						{
 							int newDelay{0};
 							if (sscanf(rxBuffer + 7,"%d", &newDelay) == 1)
@@ -129,11 +141,15 @@ namespace system::logic
 				}
 				
 				if (isBlinking && myTimer && myTimer->isTimeout()){myLed->toggle();}
-				if(myWatch){myWatch->delay_ms(10);} // Watchdog delay.
+				if(myWatch){myWatch->delay_ms(10U);} // Watchdog delay.
 			}
 		}
 
 		private:
+		/**
+		 * @brief Memory cleaner.
+		 * 
+		 */
 		std::unique_ptr<driver::serial::Interface> mySerial;
 		std::unique_ptr<driver::gpio::Interface> myLed;
 		std::unique_ptr<driver::timer::Interface> myTimer;
