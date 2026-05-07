@@ -56,7 +56,6 @@ namespace system::logic
 										"period x \n");
 			meSerial->send(menu);
 
-
 			while (true)
 			{
 				if (mySerial)

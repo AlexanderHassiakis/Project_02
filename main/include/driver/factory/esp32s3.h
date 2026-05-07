@@ -13,9 +13,11 @@
 
 namespace driver::factory 
 {
-class Esp32s3 : public Interface 
+class Esp32s3 final : public Interface 
 {
 public:
+
+    ~Esp32s3() noexcept override = default;
 
     std::unique_ptr<adc::Interface> adc(std::uint8_t pin) noexcept override 
     {
