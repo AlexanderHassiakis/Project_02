@@ -13,7 +13,7 @@
 #include "driver/tempsensor/interface.h"
 #include "driver/watchdog/interface.h"
 
-namespace system::logic
+namespace app::logic
 {
 	class Logic final{
 		public:
@@ -26,15 +26,15 @@ namespace system::logic
 			: mySerial{factory.serial()}
 			,myLed{factory.gpio(2U)}
 			,myTimer{factory.timer()}
-			,myAdc{factory.adc()}
-			,myWatch{factory.watchdog()} 
+			,myAdc{factory.adc(1)}
+			,myWatch{factory.watchdog(10)} 
 		{
 			/*Initialize hardware*/
 			if(mySerial){mySerial->init();}
 			if(myLed){myLed->output(false);}
 			if(myTimer){myTimer->setPeriod(500U);}
 			if(myAdc){myTemp = factory.tempSensor(1,*myAdc);}
-			if(myWatch){myWatch->delay_ms(0U);} // Default value.
+			if(myWatch){myWatch->watchdog(0U);} // Default value.
 		}
 
 		/**
@@ -47,7 +47,7 @@ namespace system::logic
 			bool isBlinking{false};
 			char menu[128];
 			/*Menu for terminal commands.*/
-			snprintf(msg, sizeof(msg), 	"\n-----Commands-----\n"
+			snprintf(menu, sizeof(menu), 	"\n-----Commands-----\n"
 										"Temp\n"
 										"blink\n"
 										"blink off\n"
@@ -55,7 +55,7 @@ namespace system::logic
 										"off = LED OFF\n"
 										"status\n"
 										"period x \n");
-			meSerial->send(menu);
+			mySerial->send(menu);
 
 			/**Logic Loop */
 			while (true)
@@ -111,7 +111,7 @@ namespace system::logic
 						{
 							char msg[128];
 							int t = static_cast<int>(myTemp->readTemperature());
-							const char* binkStr = isBlinking ? "ON" : "OFF";
+							const char* blinkStr = isBlinking ? "ON" : "OFF";
 							snprintf(msg, sizeof(msg), 	"\n-----STATUS-----\n "
 														"Temperature: %d C\n"
 														"Blink mode: %s\n",
@@ -143,7 +143,7 @@ namespace system::logic
 				}
 
 				/** If isBlinking & myTimer & isTimeout is true, The led will toggle on or off**/
-				if (isBlinking && myTimer && myTimer->isTimeout()){myLed->toggle();} 
+				if (isBlinking && myTimer && myTimer->hasExpired()){myLed->toggle();} 
 				/**Watchdog for Logic.**/
 				if(myWatch){myWatch->delay_ms(10U);} // Watchdog delay.
 			}
@@ -162,4 +162,4 @@ namespace system::logic
 		std::unique_ptr<driver::watchdog::Interface> myWatch;
 
 	};
-} // namespace system::logic
+} // namespace app::logic

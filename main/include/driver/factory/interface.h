@@ -60,7 +60,7 @@ namespace driver::factory
          * @param ms 
          * @return std::unique_ptr<watchdog::Interface> 
          */
-        virtual std::unique_ptr<watchdog::Interface> delay_ms(std::uint16_t ms) noexcept = 0;
+        virtual std::unique_ptr<watchdog::Interface> watchdog(std::uint16_t ms) noexcept = 0;
 
         /**
          * @brief Create temperature sensor.
@@ -69,6 +69,7 @@ namespace driver::factory
          * @param adc ADC reference
          */
         virtual std::unique_ptr<tempsensor::Interface>
+        
         tempSensor(std::uint8_t pin, adc::Interface &adc) noexcept = 0;
     };
 } // namespace include::driver::factory

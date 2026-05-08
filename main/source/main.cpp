@@ -21,10 +21,10 @@
 
 extern "C" void app_main(void) {
 
-  system::logic logic(esp32s3);
+  app::logic logic(esp32s3);
 while (1)
 {
-  logic.run();
+  app::logic.run();
 }
 
   

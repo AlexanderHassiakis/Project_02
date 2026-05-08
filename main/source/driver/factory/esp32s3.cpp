@@ -40,5 +40,10 @@ std::unique_ptr<tempsensor::Interface>Esp32s3::tempSensor(std::uint8_t pin, adc:
 {
     return std::make_unique<tempsensor::Tmp36>(pin, adc);
 };
+// Watchdog
+std::unique_ptr<driver::watchdog::Interface>Esp32s3::watchdog(std::uint16_t timeout_ms) noexcept 
+{
+  return std::make_unique<driver::watchdog::Esp32s3>(timeout_ms)
+}
 
 } // namespace driver::factory

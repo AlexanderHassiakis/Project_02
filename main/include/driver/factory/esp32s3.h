@@ -44,7 +44,7 @@ public:
         return std::make_unique<tempsensor::Tmp36>(pin, adc);
     }
 
-    std::unique_ptr<watchdog::Interface> delay_ms(std::uint16_t ms) noexcept override
+    std::unique_ptr<watchdog::Interface> watchdog(std::uint16_t ms) noexcept override
     {
         return std::make_unique<watchdog::Esp32s3>(ms);
     }

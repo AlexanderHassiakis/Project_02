@@ -53,7 +53,7 @@ namespace driver::factory
 			return std::make_unique<tempsensor::Stub>(pin, adcRef);
 		}
 
-        std::unique_ptr<watchdog::Interface> delay_ms(std::uint16_t ms) noexcept override
+        std::unique_ptr<watchdog::Interface> watchdog(std::uint16_t ms) noexcept override
 		{
 			return std::make_unique<watchdog::Stub>(ms);
 		}

@@ -36,7 +36,7 @@ namespace driver::tempsensor {
     ESP_LOGI("TMP36", "Sensor avläst %i.", voltage_mv);
 
     // Return only whole numbers.
-    return ((voltage_mv - 500)/10);
+    return (voltage_mv - 500);
     }
 
 } // namespace driver::tempsensor
