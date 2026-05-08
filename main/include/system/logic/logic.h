@@ -24,7 +24,7 @@ namespace system::logic
 		 */
 		explicit Logic(driver::factory::Interface& factory)
 			: mySerial{factory.serial()}
-			,myLed{factory.gpio(4U)}
+			,myLed{factory.gpio(2U)}
 			,myTimer{factory.timer()}
 			,myAdc{factory.adc()}
 			,myWatch{factory.watchdog()} 
