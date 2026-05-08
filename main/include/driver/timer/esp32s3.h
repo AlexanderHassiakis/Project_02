@@ -13,6 +13,11 @@ namespace driver::timer
             Esp32s3() noexcept;
             ~Esp32s3() noexcept override;
 
+            /**
+             * @brief Start timer.
+             * 
+             * setPeriod use set period for timer length. 
+             */
             void start() noexcept override;
             void stop() noexcept override;
             void setPeriod(std::uint32_t period_ms) noexcept override;
@@ -29,4 +34,4 @@ namespace driver::timer
 } // namespace driver::timer
 
  // 64-bitars int används för att undvika overflow (32-bitar) Databladet använder 52-bitar hårdvaruregister,
- // mjukvaran läser av som 64-bitar.
+ // programmet läser av som 64-bitar.
