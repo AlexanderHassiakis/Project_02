@@ -8,8 +8,8 @@ namespace driver::watchdog
 	{
 	public:
 
-	Interface(/* args */);
-	~Interface();
+	Interface() noexcept = default;
+	~Interface() noexcept  = default;
 
 	virtual void delay_ms(const std::uint16_t ms) noexcept = 0;
 

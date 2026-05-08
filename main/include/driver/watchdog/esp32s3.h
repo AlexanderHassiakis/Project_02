@@ -7,7 +7,7 @@
 #include "freertos/task.h"
 
 namespace driver::watchdog {
-	class Esp32s3 {
+	class Esp32s3 : public Interface{
 	public:
 
 		Esp32s3()  noexcept  = default;

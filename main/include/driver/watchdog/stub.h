@@ -7,8 +7,8 @@
 namespace driver::watchdog {
 	class Stub {
 	public:
-  		Stub(/* args */);
-  		~Stub();
+  		Stub() noexcept = default;
+  		~Stub() noexcept =  default;
 
 		void delay_ms(const std::uint16_t ms) noexcept override {
 

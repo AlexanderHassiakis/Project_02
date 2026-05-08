@@ -34,7 +34,7 @@ namespace app::logic
 			if(myLed){myLed->output(false);}
 			if(myTimer){myTimer->setPeriod(500U);}
 			if(myAdc){myTemp = factory.tempSensor(1,*myAdc);}
-			if(myWatch){myWatch->watchdog(0U);} // Default value.
+			if(myWatch){myWatch->delay_ms(0U);} // Default value.
 		}
 
 		/**
