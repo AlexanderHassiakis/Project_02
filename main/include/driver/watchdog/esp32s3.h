@@ -15,9 +15,9 @@ namespace driver::watchdog {
 
 		void delay_ms(const std::uint16_t ms) noexcept 
 		{	
-		// Detta är "Watchdog-matningen".
-		// pdMS_TO_TICKS(10) säger till systemet:
-		// "Jag pausar i 10 millisekunder, låt andra processer köra."
+			// This is the "Watchdog feeding".
+			// pdMS_TO_TICKS(10) tells the system:
+			// "I am pausing for 10 milliseconds, let other processes run."
 			vTaskDelay(pdMS_TO_TICKS(ms)); // Delay for loopen.
 		}
 

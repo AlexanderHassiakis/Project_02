@@ -67,7 +67,7 @@ namespace system::logic
 					{
 						rxBuffer[bytes] = '\0';
 
-						rxBuffer[strcspn(rxBuffer, "\r\n")] = 0; // Letar efter /r /n i buffer och ersätter med en nolla.
+						rxBuffer[strcspn(rxBuffer, "\r\n")] = 0; // Looks after /r /n in the buffer and replaces it with a zero.
 						//---------LED ON---------//
 						if(strcmp(rxBuffer,"on") == 0U)
 						{

@@ -11,38 +11,32 @@
 
 namespace driver::tempsensor {
 
-    Tmp36::Tmp36(adc_channel_t channel) noexcept
-        : m_channel(channel), m_adc_handle(nullptr) 
+ Tmp36::Tmp36(driver::adc::Interface& adc, uint8_t channel) noexcept 
+        :refBorrowAdc(adc), channelAdc(channel)
     {
-      adc::esp32s3::Esp32s3();
       ESP_LOGI("TMP36", "ADC-resurser Skapade.");
     }
 
-    Tmp36::~Tmp36() {
-        adc::esp32s3::~Esp32s3();
-        ESP_LOGI("TMP36", "ADC-resurser Skapade.");
-    } 
+    Tmp36::~Tmp36() = default;
 
     int Tmp36::readTemperature() noexcept {
-    int avg_raw = 0;
-    int sum = 0;
+    int sum {0};
+    int samples{8};
 
-    for (uint8_t i = 0; i < 8; ++i) {
-        int val = 0;
-        val += Adc::Esp32s3::readRaw(1);
-        sum += val;
-    }
+        for (uint8_t i = 0; i < samples; ++i) {
 
-    avg_raw = sum >> 3; // Bit 
+            sum += refBorrowAdc.readRaw(channelAdc);
+        }
 
-    // Beräkna millivolt (3300mV som referens)
+    int avg_raw = sum >> 3; // Bit 
+
+    // calc millivolt (3300mV as referens)
     int voltage_mv = (avg_raw * 3300) / 4095;
 
     ESP_LOGI("TMP36", "Sensor avläst %i.", voltage_mv);
 
-    // Returnerar tiondels grader (t.ex. 225 för 22.5°C)
-    return (voltage_mv - 500);
-  
+    // Return only whole numbers.
+    return ((voltage_mv - 500)/10);
     }
 
 } // namespace driver::tempsensor
