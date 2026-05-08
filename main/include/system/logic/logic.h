@@ -123,18 +123,19 @@ namespace system::logic
 							mySerial->send(msg);
 						}
 						//---------PARSING COMMAD FOR CHANGING THE DELAY---------//
-						else if (strncmp(rxBuffer,"period", 7) == 0U)
+						else if (strncmp(rxBuffer,"period ", 7) == 0U)
 						{
 							int newDelay{0};
 							if (sscanf(rxBuffer + 7,"%d", &newDelay) == 1)
 							{
-								if(myTimer)
+								if(myTimer && (newDelay >= 10)) // Added a minimum delay!
 								{
 									myTimer->setPeriod(newDelay);
 									char msg[32];
 									snprintf(msg,sizeof(msg),"Delay set to %d ms\n",newDelay);
 									mySerial->send(msg);
 								}
+								else{mySerial->send("ERROR!! To low delay!\n");}
 							}
 						}
 					}
