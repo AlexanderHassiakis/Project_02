@@ -1,0 +1,10 @@
+## Funktioner tilldelade 
+
+Tilldelade:
+* Timer = Suhaib Qasim
+* ADC = Fadi Lazkani
+* factory = Tim Raymond Tun
+* serial = Alexander Hassiakis
+* Tempsensor = Alla i gruppen
+* GPIO = Alla i gruppen
+* Logic = Alla i gruppen
