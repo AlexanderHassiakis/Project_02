@@ -99,6 +99,12 @@ namespace app::logic
 
 		private:
 
+		/**
+		 * @brief All inputs and repsonses for Terminal.
+		 * 
+		 * @param buffer 
+		 * @param isBlinking 
+		 */
 		void processCommand (char* buffer ,bool& isBlinking)
 		{
 			//--------- LED ON ---------//
