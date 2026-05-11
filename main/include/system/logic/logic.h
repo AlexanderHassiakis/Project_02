@@ -3,8 +3,8 @@
 #include <cstring>
 #include <memory>
 
-
-
+#include <thread>
+#include "esp_log.h"           // För snygg debugging (ESP_LOGI)
 #include "driver/factory/interface.h"
 #include "driver/serial/interface.h"
 #include "driver/gpio/interface.h"
@@ -24,7 +24,7 @@ namespace app::logic
 		 */
 		explicit Logic(driver::factory::Interface& factory)
 			: mySerial{factory.serial()}
-			,myLed{factory.gpio(2U)}
+			,myLed{factory.gpio(4U)}
 			,myTimer{factory.timer()}
 			,myAdc{factory.adc(1)}
 			,myWatch{factory.watchdog(10)} 
@@ -41,10 +41,12 @@ namespace app::logic
 		 * @brief Run 
 		 * 
 		 */
+		
 		void run()
 		{
+			bool isBlinking{false}; 
 			char rxBuffer[256];
-			bool isBlinking{false};
+			int rxInd = 0;
 			char menu[128];
 			/*Menu for terminal commands.*/
 			snprintf(menu, sizeof(menu), 	"\n-----Commands-----\n"
@@ -55,103 +57,134 @@ namespace app::logic
 										"off = LED OFF\n"
 										"status\n"
 										"period x \n");
-			mySerial->send(menu);
+			if(mySerial) {mySerial->send(menu);}
 
 			/**Logic Loop */
 			while (true)
 			{
+				
 				if (mySerial)
 				{
-					uint16_t bytes = mySerial->received(reinterpret_cast<uint8_t*>(rxBuffer), sizeof(rxBuffer) -1);
-					if (bytes > 0U)
-					{
-						rxBuffer[bytes] = '\0';
+					uint8_t temporaryBuf[64];
+					uint16_t bytes = mySerial->received(temporaryBuf, sizeof(temporaryBuf));
 
-						rxBuffer[strcspn(rxBuffer, "\r\n")] = 0; // Looks after /r /n in the buffer and replaces it with a zero.
-						//---------LED ON---------//
-						if(strcmp(rxBuffer,"on") == 0U)
+					for (size_t i = 0; i < bytes; i++)
+					{
+						char c = static_cast<char>(temporaryBuf[i]);
+						
+						if(c == '\n' || c == '\r')
 						{
-							isBlinking = false;
-							myLed->output(true);
-							mySerial->send("Led is constant ON!\n");
-						}
-						//---------LED OFF---------//
-						else if (strcmp(rxBuffer,"off") == 0U)
-						{
-							isBlinking = false;
-							myLed->output(false);
-							mySerial->send("LED is OFF!");
-						}
-						//---------LED BLINK ON---------//
-						else if (strcmp(rxBuffer,"blink") == 0U)
-						{
-							isBlinking = true;
-							myTimer->start();
-							mySerial->send("Blinking Started\n");
-						}
-						//---------READ TEMP---------//
-						else if (strcmp(rxBuffer,"temp") == 0U)
-						{
-							if(myTemp){
-								char msg[32];
-								int t = myTemp->readTemperature();
-								snprintf(msg, sizeof(msg), "Temperature: %d C\n", t);
-								mySerial->send(msg);
+							if(rxInd > 0)
+							{
+								rxBuffer[rxInd] = '\0'; // Avlsuta strängen.
+								processCommand(rxBuffer, isBlinking);
+								rxInd = 0;
 							}
 						}
-						//---------LED BLINK OFF---------//
-						else if (strcmp(rxBuffer,"blink off") == 0U)
-						{
-							isBlinking = false;
-							myTimer->stop();
-							mySerial->send("Blinking stopped\n");
-						}
-						//---------TOTAL STATUS---------//
-						else if (strcmp(rxBuffer,"status") == 0U)
-						{
-							char msg[128];
-							int t = static_cast<int>(myTemp->readTemperature());
-							const char* blinkStr = isBlinking ? "ON" : "OFF";
-							snprintf(msg, sizeof(msg), 	"\n-----STATUS-----\n "
-														"Temperature: %d C\n"
-														"Blink mode: %s\n",
-														t,blinkStr);
-							mySerial->send(msg);
-							int ledLevel = myLed->input(); // When output is true, input will act as a gpio status provider.
-							const char* ledStr =(ledLevel == 1) ? "High" : "Low";
-							snprintf(msg,sizeof(msg), "LED Level: %s\n", ledStr);
-							mySerial->send(msg);
-						}
-						//---------PARSING COMMAD FOR CHANGING THE DELAY---------//
-						else if (strncmp(rxBuffer,"period ", 7) == 0U)
-						{
-							int newDelay{0};
-							if (sscanf(rxBuffer + 7,"%d", &newDelay) == 1)
+						else{
+							if(rxInd < (sizeof(rxBuffer) -1))
 							{
-								if(myTimer && (newDelay >= 10)) // Added a minimum delay!
-								{
-									myTimer->setPeriod(newDelay);
-									char msg[32];
-									snprintf(msg,sizeof(msg),"Delay set to %d ms\n",newDelay);
-									mySerial->send(msg);
-								}
-								else{mySerial->send("ERROR!! To low delay!\n");}
+								rxBuffer[rxInd++] = c;
 							}
 						}
 					}
-					
-				}
 
 				/** If isBlinking & myTimer & isTimeout is true, The led will toggle on or off**/
-				if (isBlinking && myTimer && myTimer->hasExpired()){myLed->toggle();} 
+				if (isBlinking && myTimer && myTimer->hasExpired()){myLed->toggle(); myTimer->start();} 
 				/**Watchdog for Logic.**/
-				if(myWatch){myWatch->delay_ms(10U);} // Watchdog delay.
+				if(myWatch){myWatch->delay_ms(1U);} // Watchdog delay.
 			}
 		}
+	}
 
 		private:
+
+		void processCommand (char* buffer ,bool& isBlinking)
+		{
+			//--------- LED ON ---------//
+            if (strcmp(buffer, "on") == 0)
+            {
+                isBlinking = false;
+                myLed->output(true);
+                mySerial->send("LED is constant ON!\n");
+            }
+            //--------- LED OFF ---------//
+            else if (strcmp(buffer, "off") == 0)
+            {
+                isBlinking = false;
+                myLed->output(false);
+                mySerial->send("LED is OFF!\n");
+            }
+            //--------- BLINK ON ---------//
+            else if (strcmp(buffer, "blink") == 0)
+            {
+                isBlinking = true;
+                myTimer->start();
+                mySerial->send("Blinking Started\n");
+            }
+            //--------- BLINK OFF ---------//
+            else if (strcmp(buffer, "blink off") == 0)
+            {
+                isBlinking = false;
+                myTimer->stop();
+                mySerial->send("Blinking stopped\n");
+            }
+            //--------- READ TEMP ---------//
+            else if (strcmp(buffer, "temp") == 0)
+            {
+                if (myTemp) {
+                    char msg[48];
+                    int t = myTemp->readTemperature();
+                    snprintf(msg, sizeof(msg), "Temperature: %d C\n", t);
+                    mySerial->send(msg);
+                }
+            }
+            //--------- TOTAL STATUS ---------//
+            else if (strcmp(buffer, "status") == 0)
+            {
+                char msg[128];
+                int t = (myTemp) ? myTemp->readTemperature() : 0;
+                const char* blinkStr = isBlinking ? "ON" : "OFF";
+                int ledLevel = myLed->input();
+                
+                snprintf(msg, sizeof(msg), "\n----- STATUS -----\n"
+                                           "Temp: %d C\n"
+                                           "Blink: %s\n"
+                                           "LED: %s\n",
+                                           t, blinkStr, (ledLevel == 1 ? "HIGH" : "LOW"));
+                mySerial->send(msg);
+            }
+            //--------- SET PERIOD ---------//
+            else if (strncmp(buffer, "period ", 7) == 0)
+            {
+                int newDelay{0};
+                if (sscanf(buffer + 7, "%d", &newDelay) == 1)
+                {
+                    if (myTimer && newDelay >= 10)
+                    {
+						myTimer->stop();
+                        myTimer->setPeriod(static_cast<uint32_t>(newDelay));
+						myTimer->start();
+						ESP_LOGI("TIMER","uint value set to: %lu",static_cast<uint32_t>(newDelay));
+                        char msg[48];
+                        snprintf(msg, sizeof(msg), "Period set to %d ms\n", newDelay);
+                        mySerial->send(msg);
+                    }
+                    else { mySerial->send("ERROR: Period too low!\n"); }
+                }
+            }
+            else
+            {
+                mySerial->send("Unknown command: ");
+                mySerial->send(buffer);
+                mySerial->send("\n");
+            }
+
+		}
+
+
 		/**
-		 * @brief Memory cleaner.
+		 * @brief Memory cleaner/ MALLOC AUTO Typ.
 		 * 
 		 */
 		std::unique_ptr<driver::serial::Interface> mySerial;
