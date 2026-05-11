@@ -43,7 +43,7 @@ namespace app::logic
 		 */
 		void run()
 		{
-			char rxBuffer[64];
+			char rxBuffer[256];
 			bool isBlinking{false};
 			char menu[128];
 			/*Menu for terminal commands.*/
