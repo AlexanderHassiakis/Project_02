@@ -19,9 +19,9 @@ public:
 
    void setTemp(float temp) noexcept
    {
-	return tempread = temp;
-   }
+	   tempRead = temp;
 
+   }
 
 
 private:

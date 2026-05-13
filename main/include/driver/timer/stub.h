@@ -24,7 +24,7 @@ public:
         isRunning_ = false;
     }
 
-    void setPeriod(std::uint64_t period_ms) noexcept override 
+    void setPeriod(std::uint32_t period_ms) noexcept override 
     {
         period_ms_ = period_ms;
     }
