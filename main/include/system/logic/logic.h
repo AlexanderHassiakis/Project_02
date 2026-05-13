@@ -125,6 +125,7 @@ namespace app::logic
             else if (strcmp(buffer, "blink") == 0)
             {
                 isBlinking = true;
+
                 myTimer->start();
                 mySerial->send("Blinking Started\n");
             }
@@ -132,6 +133,7 @@ namespace app::logic
             else if (strcmp(buffer, "blink off") == 0)
             {
                 isBlinking = false;
+				myLed->output(false);
                 myTimer->stop();
                 mySerial->send("Blinking stopped\n");
             }
@@ -140,8 +142,10 @@ namespace app::logic
             {
                 if (myTemp) {
                     char msg[48];
-                    int t = myTemp->readTemperature();
-                    snprintf(msg, sizeof(msg), "Temperature: %d C\n", t);
+                    int tHel = myTemp->readTemperature();
+					int t = tHel/10;					
+					int tDeci = t%10;
+                    snprintf(msg, sizeof(msg), "Temperature: %d.%d C\n", t,tDeci);
                     mySerial->send(msg);
                 }
             }
