@@ -1,52 +1,49 @@
 #pragma once
-
 #include "driver/timer/interface.h"
+#include <cstdint>
 
-namespace driver::timer
+namespace driver::timer 
 {
-class Stub final : public Interface
+class Stub final : public Interface 
 {
 public:
     Stub() noexcept 
-    : isRunning_{false}
-    , period_ms_{0}
-    , hasExpired_{false}
-    , isInitialized_{true} {}
+        : isRunning{false}
+        , currentPeriodMs{0}
+        , isExpired{false}
+        , initialized{true} {}
 
     void start() noexcept override 
     {
-        isRunning_ = true;
-        hasExpired_ = false;
+        isRunning = true;
+        isExpired = false;
     }
 
     void stop() noexcept override 
     {
-        isRunning_ = false;
+        isRunning = false;
     }
 
-    void setPeriod(std::uint64_t period_ms) noexcept override 
+    void setPeriod(std::uint32_t periodMs) noexcept override 
     {
-        period_ms_ = period_ms;
+        currentPeriodMs = periodMs;
     }
 
     bool hasExpired() const noexcept override 
     {
-        return hasExpired_;
+        return isExpired;
     }
 
     bool isInitialized() const noexcept override 
     {
-        return isInitialized_;
+        return initialized;
     }
             
-    /**
-    * @brief  Trigger a timeout manually.
-    */
     void triggerTimeout() noexcept 
     {
-        if (isRunning_) 
+        if (isRunning) 
         {
-            hasExpired_ = true;
+            isExpired = true;
         }
     }
 
@@ -56,9 +53,9 @@ public:
     Stub operator=(Stub &&)         = delete;
 
 private:
-    bool isRunning_;
-    std::uint64_t period_ms_;
-    bool hasExpired_;
-    bool isInitialized_;
+    bool isRunning;
+    std::uint32_t currentPeriodMs;
+    bool isExpired;
+    bool initialized;
 };
 } // namespace driver::timer
