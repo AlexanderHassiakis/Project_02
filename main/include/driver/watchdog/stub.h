@@ -15,6 +15,7 @@ namespace driver::watchdog {
 	void reset() noexcept override
 	{
 		// Doesn't have to do anything in this implementation.
+		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	}
 
 	private:

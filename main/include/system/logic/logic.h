@@ -4,7 +4,7 @@
 #include <memory>
 
 #include <thread>
-#include "esp_log.h"           // För snygg debugging (ESP_LOGI)
+// #include "esp_log.h"           // För snygg debugging (ESP_LOGI)
 #include "driver/factory/interface.h"
 #include "driver/serial/interface.h"
 #include "driver/gpio/interface.h"
@@ -45,7 +45,7 @@ namespace app::logic
             }
 			else
 			{
-              ESP_LOGI("Initialize hardware", "FAILURE TO Initialize hardware!\n");
+            //   ESP_LOGI("Initialize hardware", "FAILURE TO Initialize hardware!\n");
             }
 		}
 
@@ -188,7 +188,7 @@ namespace app::logic
 						myTimer->stop();
                         myTimer->setPeriod(static_cast<uint32_t>(newDelay));
 						myTimer->start();
-						ESP_LOGI("TIMER","uint value set to: %lu",static_cast<uint32_t>(newDelay));
+						// ESP_LOGI("TIMER","uint value set to: %lu",static_cast<uint32_t>(newDelay));
                         char msg[48];
                         snprintf(msg, sizeof(msg), "Period set to %d ms\n", newDelay);
                         mySerial->send(msg);

@@ -1,7 +1,8 @@
 #pragma once
 
 #include <cstdint>
-#include "esp_log.h"  // Debugg
+#include <cstdio>
+
 
 #include "driver/tempsensor/interface.h"
 
@@ -14,7 +15,7 @@ public:
    int readTemperature() noexcept override
    {
 	return tempRead;
-   ESP_LOGI("STUB","%i",tempRead);
+   std::printf("STUB,%i",tempRead);
    }
 
    void setTemp(float temp) noexcept
