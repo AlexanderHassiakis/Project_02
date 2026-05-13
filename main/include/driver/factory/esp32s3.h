@@ -33,7 +33,7 @@ public:
     std::unique_ptr<tempsensor::Interface> tempSensor(std::uint8_t pin, adc::Interface& adc) noexcept override;
     
 
-    std::unique_ptr<watchdog::Interface> watchdog(std::uint16_t ms) noexcept override;
+    std::unique_ptr<watchdog::Interface> watchdog() noexcept override;
     
 };
 

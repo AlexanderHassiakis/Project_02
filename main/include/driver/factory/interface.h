@@ -60,7 +60,7 @@ namespace driver::factory
          * @param ms 
          * @return std::unique_ptr<watchdog::Interface> 
          */
-        virtual std::unique_ptr<watchdog::Interface> watchdog(std::uint16_t ms) noexcept = 0;
+        virtual std::unique_ptr<watchdog::Interface> watchdog() noexcept = 0;
 
         /**
          * @brief Create temperature sensor.

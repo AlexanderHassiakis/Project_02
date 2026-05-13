@@ -57,9 +57,8 @@ namespace driver::factory
 			return std::make_unique<tempsensor::Stub>();
 		}
 
-        std::unique_ptr<watchdog::Interface> watchdog(std::uint16_t ms) noexcept override
+        std::unique_ptr<watchdog::Interface> watchdog() noexcept override
 		{
-			(void) (ms);
 			return std::make_unique<watchdog::Stub>();
 		}
 	};

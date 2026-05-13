@@ -15,8 +15,8 @@ public:
 	void reset() noexcept override
 	{	
 		// This is the "Watchdog feeding".
-		// pdMS_TO_TICKS(10) tells the system:
-		// "I am pausing for 10 milliseconds, let other processes run."
+		// pdMS_TO_TICKS(1) tells the system:
+		// "I am pausing for 1 milliseconds, let other processes run."
 		vTaskDelay(pdMS_TO_TICKS(sleepTime_ms)); // Delay for loopen.
 	}
 
