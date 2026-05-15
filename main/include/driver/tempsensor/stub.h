@@ -10,6 +10,7 @@ namespace driver::tempsensor {
 class Stub final : public Interface {
 
 public:
+   Stub()= default;
    ~Stub() = default;
 
    int readTemperature() noexcept override
@@ -27,7 +28,7 @@ public:
 
 private:
 
-int tempRead = 25;
+int tempRead{250};
 
 
 };

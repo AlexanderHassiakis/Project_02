@@ -166,15 +166,16 @@ namespace app::logic
             else if (strcmp(buffer, "status") == 0)
             {
                 char msg[128];
-                int t = (myTemp) ? myTemp->readTemperature() : 0;
+                int t = (myTemp) ? (myTemp->readTemperature())/10 : 0;
                 const char* blinkStr = isBlinking ? "ON" : "OFF";
                 int ledLevel = myLed->input();
+				int tDeci = t%10;
                 
                 snprintf(msg, sizeof(msg), "\n----- STATUS -----\n"
-                                           "Temp: %d C\n"
+                                           "Temp: %d.%d C\n"
                                            "Blink: %s\n"
                                            "LED: %s\n",
-                                           t, blinkStr, (ledLevel == 1 ? "HIGH" : "LOW"));
+                                           t,tDeci, blinkStr, (ledLevel == 1 ? "HIGH" : "LOW"));
                 mySerial->send(msg);
             }
             //--------- SET PERIOD ---------//

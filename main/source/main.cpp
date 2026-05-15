@@ -1,7 +1,6 @@
-// // Main file //
-// // #include "driver/factory/esp32s3.h"  Disable when running stub!!
-// #include "driver/factory/stub.h"
-// // #include "freertos/task.h"   Disable when running stub!!
+//ESP32 TEST Main file //
+//  #include "driver/factory/esp32s3.h"  
+//  #include "freertos/task.h"   
 // #include "system/logic/logic.h"
 
 
@@ -23,11 +22,11 @@
 // }
 
 
+//STUB TEST CODE
 #include <iostream>
 #include <memory>
 #include <chrono>
 
-// #include "driver/factory/esp32s3.h" // Aktivera för ESP32
 #include "driver/factory/stub.h"
 #include "system/logic/logic.h"
 
