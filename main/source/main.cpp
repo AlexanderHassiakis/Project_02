@@ -3,10 +3,10 @@
 //  #include "freertos/task.h"   
 // #include "system/logic/logic.h"
 
-
-// extern "C" void app_main() {
-//   // Vi använder 'static' för att säkerställa att factoryn lever kvar i minnet
-//   static driver::factory::Stub esp_factory;
+// extern "C" void app_main() Används för ESP IDF .
+//  extern "C" void app_main() {
+//   // Vi använder 'static' för att säkerställa att factoryn lever kvar i
+//   minnet static driver::factory::Stub esp_factory;
 
 //   // Skapa applikationslogiken
 //   app::logic::Logic myApp(esp_factory);
@@ -22,7 +22,8 @@
 // }
 
 
-//STUB TEST CODE
+//STUB TEST CODE 
+// Test WSL CODE : g++ -std=c++20 main/source/main.cpp -I main/include -o logic_test && ./logic_test
 #include <iostream>
 #include <memory>
 #include <chrono>
@@ -30,13 +31,9 @@
 #include "driver/factory/stub.h"
 #include "system/logic/logic.h"
 
-// Om vi INTE är på ESP32, definiera app_main som main
-#ifndef ESP_PLATFORM
     int main() {
         std::cout << "--- Startar Stub-version i WSL ---" << std::endl;
-#else
-    extern "C" void app_main() {
-#endif
+
 
     // Vi använder static för att säkerställa att factoryn lever kvar i minnet
     static driver::factory::Stub esp_factory;
@@ -53,9 +50,6 @@
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }
 
-#ifndef ESP_PLATFORM
-    return 0; // main() på PC måste returnera ett värde
+
 }
-#else
-}
-#endif
+
