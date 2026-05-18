@@ -9,6 +9,7 @@
 #include "driver/tempsensor/stub.h"
 #include "driver/timer/stub.h"
 #include "driver/watchdog/stub.h"
+#include "driver/mqtt/stub.h"
 
 namespace driver::factory
 {
@@ -60,6 +61,11 @@ namespace driver::factory
         std::unique_ptr<watchdog::Interface> watchdog() noexcept override
 		{
 			return std::make_unique<watchdog::Stub>();
+		}
+
+		 std::unique_ptr<mqtt::Interface> mqtt() noexcept override
+		{
+			return std::make_unique<mqtt::Stub>();
 		}
 	};
 

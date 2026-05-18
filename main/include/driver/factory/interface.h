@@ -9,6 +9,7 @@
 #include "driver/tempsensor/interface.h"
 #include "driver/timer/interface.h"
 #include "driver/watchdog/interface.h"
+#include "driver/mqtt/interface.h"
 
 namespace driver
 {
@@ -18,6 +19,7 @@ namespace driver
 	namespace tempsensor{class Interface;}
 	namespace timer{class Interface;}	
     namespace watchdog{class Interface;}
+    namespace mqtt{class Interface;}
     
 } // namespace driver
 
@@ -71,5 +73,10 @@ namespace driver::factory
         virtual std::unique_ptr<tempsensor::Interface>
         
         tempSensor(std::uint8_t pin, adc::Interface &adc) noexcept = 0;
+
+        /**
+         * @brief mqtt communication
+         */
+        virtual std::unique_ptr<mqtt::Interface> mqtt() noexcept = 0;
     };
 } // namespace include::driver::factory
