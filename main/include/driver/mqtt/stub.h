@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <cstdio>
+#include "driver/mqtt/interface.h"
 
 namespace driver::mqtt {
     class interface {
@@ -22,14 +23,37 @@ namespace driver::mqtt {
                 ,data{nullptr}
                 ,connected{false}
                 ,messageWaiting{false}
+                ,topic{1U};
             {}
+
+
+            /**
+             * @brief Start initializing the MQTT.
+             *
+             */
+            void mqttInit() noexcept 
+            {
+                std::printf("initializing the MQTT")
+                connected = true;
+            }
+
+            /**
+             * @brief Connection status to MQTT SERVER
+             *
+             * @return true
+             * @return false
+             */
+            bool isConnected() noexcept override
+            {
+                return connected;
+            }
 
             /**
              * @brief Send data though MQTT
              *
              * @param bytes
              */
-            void send(std::uint8_t *bytes, std::uint16_t byteLen) noexcept override
+            void send(const std::string& topic, const std::uint8_t *bytes, std::uint16_t byteLen) noexcept override
             {
                 if (isConnected)
                 {
@@ -47,7 +71,7 @@ namespace driver::mqtt {
              *
              * @param bytes
              */
-            void recieve(std::uint8_t *bytes, sizeof(data)) noexcept override
+            void recieve(std::uint8_t *bytes, sizeof(data)) noexcept
             {
                 if (isConnected && messageWaiting)
                 {
@@ -62,26 +86,8 @@ namespace driver::mqtt {
 
             }
 
-            /**
-             * @brief Connection status to MQTT SERVER
-             *
-             * @return true
-             * @return false
-             */
-            bool isConnected() noexcept override
-            {
-                return connected;
-            }
-
-            /**
-             * @brief Start initializing the MQTT.
-             *
-             */
-            void mqttInit() noexcept override
-            {
-                std::printf("initializing the MQTT")
-                connected = true;
-            }
+            // No necessary for Stub.
+            void registerCallback(std::functional<void(const std::string& topic, const std::string& data)> cb) noexcept;
 
             /**Stub construct Forbidden moves/copy. **/
             Stub(const Stub &) = delete;            // No copy constructor.
@@ -94,6 +100,7 @@ namespace driver::mqtt {
             std::uint8_t data[dataLen]{0U};
             bool connected;
             bool messageWaiting;
+            std::uint8_t topic{};
 
 
 

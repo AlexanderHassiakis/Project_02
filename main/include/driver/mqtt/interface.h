@@ -12,45 +12,31 @@ namespace driver::mqtt
 	public:
 		/**
 		 * @brief Destroy the interface object
-		 * 
+		 *
 		 */
-		virtual ~interface() noexcept = 0;
+		virtual ~Esp32s3() noexcept override;
 
 		/**
-		 * @brief Send data though MQTT 
-		 * 
-		 * @param bytes 
+		 * @brief Send data though MQTT
+		 *
+		 * @param bytes
 		 */
-		virtual void send(std::uint8_t* bytes, std::uint16_t byteLen) noexcept = 0;
+		virtual void send(const std::string& topic, const std::uint8_t *bytes, std::uint16_t byteLen) noexcept;
 
 		/**
 		 * @brief Recieve data though MQTT
-		 * 
-		 * @param bytes 
+		 *
+		 * @param bytes
 		 */
-		virtual void recieve(std::uint8_t* bytes,std::uint16_t byteLen ) noexcept = 0;
+		virtual void registerCallback(std::functional<void(const std::string& topic, const std::string& data)> cb) noexcept;
 
 		/**
 		 * @brief Connection status to MQTT SERVER
-		 * 
-		 * @return true 
-		 * @return false 
+		 *
+		 * @return true
+		 * @return false
 		 */
-		virtual bool isConnected() noexcept = 0;
-
-		/**
-		 * @brief Start initializing the MQTT.
-		 * 
-		 */
-		virtual void mqttInit() noexcept = 0;
-
-
-
-
-
-
-
-
+		virtual bool isConnected() noexcept override;
 
 	};
 } // namespace driver::mqtt
