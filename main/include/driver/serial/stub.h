@@ -71,31 +71,6 @@ public:
 
 	}
 
-	//    /**
-	// 	 * @brief recives commands/
-	// 	 *
-	// 	 * @param[out] buf Buffer holding received data.
-	// 	 * @param[in] bufLen Buffer length in bytes.
-	// 	 *
-	// 	 * @return Number of received bytes.
-	// 	 *
-	// 	 */
-	// std::uint16_t received(std::uint8_t *buf, std::uint16_t bufLen) noexcept override
-	// {
-	// 	//Checks if there is a msg/data available.
-	// 	if (!myDataAvailable) { return 0U;};
-	// 	std::printf("Message recived:\n");
-	// 	std::printf("%s\n",myMsg);
-	// 	if ( buf != nullptr && bufLen > 0)
-	// 	{
-	// 		for (size_t i = 0; i < bufLen; i++)
-	// 		{
-	// 			std::printf("%u",buf[i]);
-	// 		}
-	// 	}
-	// 	myDataAvailable = false;
-	// 	return 1U;
-	// }
     
 	std::uint16_t received(const char *str, std::uint16_t strLen) noexcept override
 	{
