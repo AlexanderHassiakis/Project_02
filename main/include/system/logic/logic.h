@@ -4,7 +4,7 @@
 #include <memory>
 
 #include <thread>
-#include "esp_log.h"           // För snygg debugging (ESP_LOGI)
+// #include "esp_log.h"           // För snygg debugging (ESP_LOGI)
 #include "driver/factory/interface.h"
 #include "driver/serial/interface.h"
 #include "driver/gpio/interface.h"
@@ -23,19 +23,32 @@ namespace app::logic
 		 * @param factory 
 		 */
 		explicit Logic(driver::factory::Interface& factory)
-			: mySerial{factory.serial()}
+			:myRxBuffer{} 
+			,mySerial{factory.serial()}
 			,myLed{factory.gpio(4U)}
 			,myTimer{factory.timer()}
 			,myAdc{factory.adc(1)}
-			,myWatch{factory.watchdog(10)} 
+			,myWatch{factory.watchdog()} 
+			,myInitialized{false}
 		{
 			/*Initialize hardware*/
-			if(mySerial){mySerial->init();}
-			if(myLed){myLed->output(false);}
-			if(myTimer){myTimer->setPeriod(500U);}
-			if(myAdc){myTemp = factory.tempSensor(1,*myAdc);}
-			if(myWatch){myWatch->delay_ms(0U);} // Default value.
+			// Indicate failure if any of the pointers are nullptr.
+
+			if (mySerial && myLed && myTimer && myAdc && myWatch)
+			{
+				mySerial->init();
+				myLed->output(false);
+				myTimer->setPeriod(500U);
+				myTemp = factory.tempSensor(1,*myAdc);
+                myWatch->reset();
+				myInitialized = true;
+            }
+			else
+			{
+            //   ESP_LOGI("Initialize hardware", "FAILURE TO Initialize hardware!\n");
+            }
 		}
+
 
 		/**
 		 * @brief Run 
@@ -44,8 +57,8 @@ namespace app::logic
 		
 		void run()
 		{
+			if (!myInitialized) { return; }
 			bool isBlinking{false}; 
-			char rxBuffer[256];
 			int rxInd = 0;
 			char menu[128];
 			/*Menu for terminal commands.*/
@@ -57,7 +70,7 @@ namespace app::logic
 										"off = LED OFF\n"
 										"status\n"
 										"period x \n");
-			if(mySerial) {mySerial->send(menu);}
+			mySerial->send(menu);
 
 			/**Logic Loop */
 			while (true)
@@ -76,23 +89,23 @@ namespace app::logic
 						{
 							if(rxInd > 0)
 							{
-								rxBuffer[rxInd] = '\0'; // Avlsuta strängen.
-								processCommand(rxBuffer, isBlinking);
+								myRxBuffer[rxInd] = '\0'; // Avlsuta strängen.
+								processCommand(myRxBuffer, isBlinking);
 								rxInd = 0;
 							}
 						}
 						else{
-							if(rxInd < (sizeof(rxBuffer) -1))
+							if(rxInd < (sizeof(myRxBuffer) -1))
 							{
-								rxBuffer[rxInd++] = c;
+								myRxBuffer[rxInd++] = c;
 							}
 						}
 					}
 
 				/** If isBlinking & myTimer & isTimeout is true, The led will toggle on or off**/
-				if (isBlinking && myTimer && myTimer->hasExpired()){myLed->toggle(); myTimer->start();} 
+				if (isBlinking && myTimer->hasExpired()){myLed->toggle(); myTimer->start();} 
 				/**Watchdog for Logic.**/
-				if(myWatch){myWatch->delay_ms(1U);} // Watchdog delay.
+				myWatch->reset(); // Watchdog delay.
 			}
 		}
 	}
@@ -125,6 +138,7 @@ namespace app::logic
             else if (strcmp(buffer, "blink") == 0)
             {
                 isBlinking = true;
+
                 myTimer->start();
                 mySerial->send("Blinking Started\n");
             }
@@ -132,6 +146,7 @@ namespace app::logic
             else if (strcmp(buffer, "blink off") == 0)
             {
                 isBlinking = false;
+				myLed->output(false);
                 myTimer->stop();
                 mySerial->send("Blinking stopped\n");
             }
@@ -140,8 +155,10 @@ namespace app::logic
             {
                 if (myTemp) {
                     char msg[48];
-                    int t = myTemp->readTemperature();
-                    snprintf(msg, sizeof(msg), "Temperature: %d C\n", t);
+                    int tHel = myTemp->readTemperature();
+					int t = tHel/10;					
+					int tDeci = t%10;
+                    snprintf(msg, sizeof(msg), "Temperature: %d.%d C\n", t,tDeci);
                     mySerial->send(msg);
                 }
             }
@@ -149,15 +166,16 @@ namespace app::logic
             else if (strcmp(buffer, "status") == 0)
             {
                 char msg[128];
-                int t = (myTemp) ? myTemp->readTemperature() : 0;
+                int t = (myTemp) ? (myTemp->readTemperature())/10 : 0;
                 const char* blinkStr = isBlinking ? "ON" : "OFF";
                 int ledLevel = myLed->input();
+				int tDeci = t%10;
                 
                 snprintf(msg, sizeof(msg), "\n----- STATUS -----\n"
-                                           "Temp: %d C\n"
+                                           "Temp: %d.%d C\n"
                                            "Blink: %s\n"
                                            "LED: %s\n",
-                                           t, blinkStr, (ledLevel == 1 ? "HIGH" : "LOW"));
+                                           t,tDeci, blinkStr, (ledLevel == 1 ? "HIGH" : "LOW"));
                 mySerial->send(msg);
             }
             //--------- SET PERIOD ---------//
@@ -171,7 +189,7 @@ namespace app::logic
 						myTimer->stop();
                         myTimer->setPeriod(static_cast<uint32_t>(newDelay));
 						myTimer->start();
-						ESP_LOGI("TIMER","uint value set to: %lu",static_cast<uint32_t>(newDelay));
+						// ESP_LOGI("TIMER","uint value set to: %lu",static_cast<uint32_t>(newDelay));
                         char msg[48];
                         snprintf(msg, sizeof(msg), "Period set to %d ms\n", newDelay);
                         mySerial->send(msg);
@@ -193,12 +211,14 @@ namespace app::logic
 		 * @brief Memory cleaner/ MALLOC AUTO Typ.
 		 * 
 		 */
-		std::unique_ptr<driver::serial::Interface> mySerial;
+        static constexpr std::uint16_t RxLen{256U};
+        char myRxBuffer[RxLen];
+        std::unique_ptr<driver::serial::Interface> mySerial;
 		std::unique_ptr<driver::gpio::Interface> myLed;
 		std::unique_ptr<driver::timer::Interface> myTimer;
 		std::unique_ptr<driver::tempsensor::Interface> myTemp;
 		std::unique_ptr<driver::adc::Interface> myAdc;
 		std::unique_ptr<driver::watchdog::Interface> myWatch;
-
-	};
+		bool myInitialized;
+};
 } // namespace app::logic

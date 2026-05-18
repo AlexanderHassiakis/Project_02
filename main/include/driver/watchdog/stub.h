@@ -4,18 +4,20 @@
 #include <thread>
 #include <cstdint>
 
+#include "driver/watchdog/interface.h"
+
 namespace driver::watchdog {
-	class Stub {
+	class Stub final : public Interface {
 	public:
   		Stub() noexcept = default;
-  		~Stub() noexcept =  default;
+  		~Stub() noexcept override =  default;
 
-		void delay_ms(const std::uint16_t ms) noexcept override {
-
-			std::this_thread::sleep_for(std::chrono::milliseconds(ms));
-		}
+	void reset() noexcept override
+	{
+		// Doesn't have to do anything in this implementation.
+		std::this_thread::sleep_for(std::chrono::milliseconds(100));
+	}
 
 	private:
-  	/* data */
-	};
+};
 } // namespace driver::watchdog

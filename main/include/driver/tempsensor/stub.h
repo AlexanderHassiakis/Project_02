@@ -1,7 +1,8 @@
 #pragma once
 
 #include <cstdint>
-#include "esp_log.h"  // Debugg
+#include <cstdio>
+
 
 #include "driver/tempsensor/interface.h"
 
@@ -9,24 +10,25 @@ namespace driver::tempsensor {
 class Stub final : public Interface {
 
 public:
+   Stub()= default;
    ~Stub() = default;
 
    int readTemperature() noexcept override
    {
 	return tempRead;
-   ESP_LOGI("STUB","%i",tempRead);
+   std::printf("STUB,%i",tempRead);
    }
 
    void setTemp(float temp) noexcept
    {
-	return tempread = temp;
-   }
+	   tempRead = temp;
 
+   }
 
 
 private:
 
-int tempRead = 25;
+int tempRead{250};
 
 
 };

@@ -2,7 +2,7 @@
 
 #include <cstdint>
 #include <memory>
-
+#include "driver/factory/interface.h"
 #include "driver/adc/stub.h"
 #include "driver/gpio/stub.h"
 #include "driver/serial/stub.h"
@@ -18,12 +18,12 @@ namespace driver::factory
 		
 		Stub() noexcept
 		{
-			std::printf("Constructor done!\n")
+			std::printf("Constructor done!\n");
 		}
 
 		~Stub() noexcept override
 		{
-			std::printf("Destruktor finished!\n")
+			std::printf("Destruktor finished!\n");
 		}
 
 		std::unique_ptr<adc::Interface> adc(std::uint8_t pin) noexcept override
@@ -50,12 +50,16 @@ namespace driver::factory
 
 		std::unique_ptr<tempsensor::Interface> tempSensor(std::uint8_t pin, adc::Interface& adcRef) noexcept override
 		{
-			return std::make_unique<tempsensor::Stub>(pin, adcRef);
+			// Not used in this implementation, ignore.
+			(void) (pin);
+			(void) (adcRef);
+
+			return std::make_unique<tempsensor::Stub>();
 		}
 
-        std::unique_ptr<watchdog::Interface> watchdog(std::uint16_t ms) noexcept override
+        std::unique_ptr<watchdog::Interface> watchdog() noexcept override
 		{
-			return std::make_unique<watchdog::Stub>(ms);
+			return std::make_unique<watchdog::Stub>();
 		}
 	};
 
