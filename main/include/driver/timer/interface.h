@@ -7,6 +7,10 @@ namespace driver::timer
 class Interface
 {
 public:
+    /**
+     * @brief Destroy the Interface object
+     * 
+     */
    virtual ~Interface() noexcept = default;
 
     /**

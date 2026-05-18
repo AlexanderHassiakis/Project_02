@@ -19,9 +19,27 @@ namespace driver::timer
              * setPeriod use set period for timer length. 
              */
             void start() noexcept override;
+            /**
+             * @brief Stops the timer.
+             */
             void stop() noexcept override;
+            /**
+             * @brief Sets the timeout period.
+             *
+             * @param period_ms Period in milliseconds.
+             */
             void setPeriod(std::uint32_t period_ms) noexcept override;
+            /**
+             * @brief Checks if the timer has reached.
+             *
+             * @return true if timeout, false if not.
+             */
             bool hasExpired() const noexcept override;
+            /**
+             * @brief Checks if the timer driver is initialized.
+             *
+             * @return true if initialized, false if not initialized.
+             */
             bool isInitialized() const noexcept override;
 
         private:
