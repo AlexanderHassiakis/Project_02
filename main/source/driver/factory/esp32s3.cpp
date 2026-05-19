@@ -5,9 +5,12 @@
 
 #include "driver/adc/esp32s3.h"
 #include "driver/gpio/esp32s3.h"
+#include "driver/mqtt/esp32s3.h"
 #include "driver/serial/esp32s3.h"
-#include "driver/timer/esp32s3.h"
 #include "driver/tempsensor/tmp36.h"
+#include "driver/timer/esp32s3.h"
+#include "driver/watchdog/esp32s3.h"
+
 
 namespace driver::factory 
 {
@@ -45,5 +48,12 @@ std::unique_ptr<watchdog::Interface>Esp32s3::watchdog() noexcept
 {
   return std::make_unique<driver::watchdog::Esp32s3>();
 }
+
+//MQTT
+std::unique_ptr<mqtt::Interface>Esp32s3::mqtt() noexcept 
+{
+  return std::make_unique<driver::mqtt::Esp32s3>();
+}
+
 
 } // namespace driver::factory

@@ -38,7 +38,7 @@ namespace driver::mqtt {
 		 *
 		 * @param bytes
 		 */
-		void registerCallback(std::functional<void(const std::string& topic, const std::string& data)> cb) noexcept;
+		void registerCallback(std::function<void(const std::string& topic, const std::string& data)> cb) noexcept;
 
 		/**
 		 * @brief Connection status to MQTT SERVER
@@ -63,13 +63,13 @@ namespace driver::mqtt {
 
 		private:
 		bool myConnectionStatus;
-		esp_mqtt_client_handle_t myClient();
+		esp_mqtt_client_handle_t myClient;
 
 		/**
 		 * @brief Here we save the function that will sent back to use from logic.
 		 * 
 		 */
-		std::functional<void(const std::string&, const std::string&)> myDataCallback;
+		std::function<void(const std::string&, const std::string&)> myDataCallback;
 
 		/**
 		 * @brief  Static Event Handler needed for the ESP-IDF

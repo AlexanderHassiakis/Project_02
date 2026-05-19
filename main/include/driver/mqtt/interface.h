@@ -2,11 +2,12 @@
 
 
 #include <cstdint>
+#include <functional>
 
 
 namespace driver::mqtt
 {
-	class interface
+	class Interface
 	{
 	
 	public:
@@ -14,21 +15,21 @@ namespace driver::mqtt
 		 * @brief Destroy the interface object
 		 *
 		 */
-		virtual ~Esp32s3() noexcept override;
+		virtual ~Interface() noexcept = default;
 
 		/**
 		 * @brief Send data though MQTT
 		 *
 		 * @param bytes
 		 */
-		virtual void send(const std::string& topic, const std::uint8_t *bytes, std::uint16_t byteLen) noexcept;
+		virtual void send(const std::string& topic, const std::uint8_t *bytes, std::uint16_t byteLen) noexcept = 0;
 
 		/**
 		 * @brief Recieve data though MQTT
 		 *
 		 * @param bytes
 		 */
-		virtual void registerCallback(std::functional<void(const std::string& topic, const std::string& data)> cb) noexcept;
+		virtual void registerCallback(std::function<void(const std::string& topic, const std::string& data)> cb) noexcept = 0;
 
 		/**
 		 * @brief Connection status to MQTT SERVER
@@ -36,7 +37,13 @@ namespace driver::mqtt
 		 * @return true
 		 * @return false
 		 */
-		virtual bool isConnected() noexcept override;
+		virtual bool isConnected() noexcept = 0;
+
+		/**
+		 * @brief Initializes the MQTT.
+		 * 
+		 */
+		virtual void mqttInit() noexcept = 0;
 
 	};
 } // namespace driver::mqtt
