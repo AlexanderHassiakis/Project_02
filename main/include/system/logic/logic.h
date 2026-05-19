@@ -4,7 +4,7 @@
 #include <memory>
 #include <thread>
 
-// #include "esp_log.h"           // För snygg debugging (ESP_LOGI)
+// #include "esp_log.h"  if needed to debugg.
 #include "driver/adc/interface.h"
 #include "driver/factory/interface.h"
 #include "driver/gpio/interface.h"
@@ -77,7 +77,7 @@ public:
                                                    const std::string &data) {
         char mqttBuf[124];
         snprintf(mqttBuf, sizeof(mqttBuf), "%s", data.c_str());
-
+		
         this->processCommand(mqttBuf, isBlinking);
       });
     }
@@ -106,12 +106,11 @@ public:
       }
       /** If isBlinking & myTimer & isTimeout is true, The led will toggle on or
        * off**/
-      if (isBlinking && myTimer->hasExpired()) {
-        myLed->toggle();
-        myTimer->start();
-      }
+      if (isBlinking && myTimer->hasExpired()) 
+	  {myLed->toggle(); myTimer->start(); }
+
       /**Watchdog for Logic.**/
-      myWatch->reset(); // Watchdog delay.
+      myWatch->reset();
     }
   }
 
