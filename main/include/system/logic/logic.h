@@ -58,15 +58,22 @@ public:
     char menu[RxLen]{};
 
     if (myMqtt) {
-      myMqtt->mqttInit();
+      	myMqtt->mqttInit();
 
-	  // Connect MQTT callback passing topic and data.
-      std::function<void(const std::string &topic, const std::string &data)> 
-	      callback{[this](const std::string &topic, const std::string &data) {
-            this->mqttCallback(topic, data);
-          }};
-        myMqtt->registerCallback(callback);
-        ESP_LOGI("MQTT_TEST", "MQTT & WIFI WORKING!");
+	  	//Sending Temp read to MQTT
+	  	int tHel = myTemp->readTemperature();
+	  	char tempBuffer[20];
+		//String Number Print Formatted gör om till string!.
+		snprintf(tempBuffer, sizeof(tempBuffer), "%d.%d", tHel / 10, tHel % 10);
+		myMqtt->send(topic,reinterpret_cast<const std::uint8_t*>(tempBuffer),strlen(tempBuffer));
+
+		// Connect MQTT callback passing topic and data.
+		std::function<void(const std::string &topic,const std::string &data)>callback{[this](const std::string &topic,const std::string &data) 
+		{
+			this->mqttCallback(topic, data);
+		}};
+		myMqtt->registerCallback(callback);
+		ESP_LOGI("MQTT_TEST", "MQTT & WIFI WORKING!");
     }
 
   
@@ -219,5 +226,6 @@ private:
   std::unique_ptr<driver::mqtt::Interface> myMqtt;
   bool myInitialized;
   bool myIsBlinking;
+  std::string topic = "sensor/temp";
 };
 } // namespace app::logic
