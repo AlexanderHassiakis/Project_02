@@ -1,3 +1,13 @@
+#Specficy remove this files
+sdkconfig
+sdkconfig.old
+build/
+Debug/
+.vscode/
+.vs/
+managed_components/
+dependencies.lock
+
 # Ignore everything without an extension.
 *
 !*.*
@@ -43,3 +53,7 @@
 
 #Ignore Vscode files
 *.vscode
+
+#Ignore MQTT Drivers
+*.managed_components/
+

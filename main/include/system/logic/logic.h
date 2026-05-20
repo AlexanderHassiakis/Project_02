@@ -64,10 +64,6 @@ public:
 
     int rxInd = 0;
     char menu[RxLen]{};
-
-    // ÄNDRING: Tagit bort det asynkrona och felaktigt timade mqttInit()-blocket
-    // som låg här i början av run()
-
     /*Menu for terminal commands.*/
     snprintf(menu, sizeof(menu),
              "\t\t\n-----Commands-----\n"
@@ -79,6 +75,7 @@ public:
              "Status command\t\t=\tstatus\n"
              "Change blink period\t=\tperiod\n");
     mySerial->send(menu);
+
 
     /**Logic Loop */
     while (true) {
@@ -109,10 +106,46 @@ public:
         myTimer->start();
       }
 
-      // ÄNDRING: Lagt till ett villkor som säkert skickar det första
-      // temperaturvärdet först NÄR nätverk och MQTT är redo
       if (myMqtt && myMqtt->isConnected()) {
-        static bool initialPublishDone = false;
+        mqttTemp();
+      }
+
+      /**Watchdog for Logic.**/
+      myWatch->reset();
+	  
+    }
+  }
+
+private:
+	/**
+	 * @brief reads and put the data in a buffer to be read.
+	 * 
+	 * @param topic 
+	 * @param data 
+	 */
+	void mqttCallback(const std::string &topic,const std::string &data) noexcept {
+		char mqttBuffer[RxLen]{}; // Buffer needed to have more than on letter/number saved.
+		size_t copyLen = (data.length() < (RxLen - 1)) ? data.length() : (RxLen - 1); //  Checl data.lenght to be smaller than RxLen else it will be max size Rxlen.
+		memcpy(mqttBuffer, data.data(), copyLen); // memory copy (minneskopiering)
+		//Dess enda uppgift är att kopiera ett specificerat antal bytes från ett ställe i arbetsminnet (RAM) till ett annat.
+		mqttBuffer[copyLen] = '\0';
+
+		// KORRIGERING: Ändrat logg-makrot så att det faktiskt skriver ut strängen i terminalen med %s
+		ESP_LOGI("MQTT_MSG", "Mottog MQTT-meddelande: %s", mqttBuffer);
+
+		// KORRIGERING: Tog bort den överflödiga "const char *buffer"-raden som inte användes
+		processCommand(mqttBuffer);
+	}
+
+
+
+	/**
+	 * @brief Send the read temp to the MQTT Broker.
+	 * 
+	 */
+	void mqttTemp()
+	{
+		static bool initialPublishDone = false;
         if (!initialPublishDone) {
           int tHel = myTemp->readTemperature();
           char tempBuffer[20];
@@ -123,29 +156,6 @@ public:
                        strlen(tempBuffer));
           initialPublishDone = true;
         }
-      }
-
-      /**Watchdog for Logic.**/
-      myWatch->reset();
-
-      // ÄNDRING: Lagt till en kort sleep för att ge FreeRTOS bakgrundstaskar
-      // (Wi-Fi/MQTT) tid att exekvera och förhindra CPU-mättnad
-      std::this_thread::sleep_for(std::chrono::milliseconds(10));
-    }
-  }
-
-private:
-	void mqttCallback(const std::string &topic,const std::string &data) noexcept {
-		char mqttBuffer[RxLen]{}; // Buffer needed to have more than on letter/number saved.
-		size_t copyLen = (data.length() < (RxLen - 1)) ? data.length() : (RxLen - 1);
-		memcpy(mqttBuffer, data.data(), copyLen); // memory copy (minneskopiering)
-		mqttBuffer[copyLen] = '\0';
-
-		// KORRIGERING: Ändrat logg-makrot så att det faktiskt skriver ut strängen i terminalen med %s
-		ESP_LOGI("MQTT_MSG", "Mottog MQTT-meddelande: %s", mqttBuffer);
-
-		// KORRIGERING: Tog bort den överflödiga "const char *buffer"-raden som inte användes
-		processCommand(mqttBuffer);
 	}
 
   /**
@@ -188,6 +198,8 @@ private:
         int tDeci = tHel % 10;
         snprintf(msg, sizeof(msg), "Temperature: %d.%d C\n", t, tDeci);
         mySerial->send(msg);
+
+		mqttTemp();
       }
     }
     //--------- TOTAL STATUS ---------//
