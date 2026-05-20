@@ -3,6 +3,7 @@
 #include <cstring>
 #include <memory>
 #include <thread>
+#include <mutex>
 
 #include "driver/adc/interface.h"
 #include "driver/factory/interface.h"
