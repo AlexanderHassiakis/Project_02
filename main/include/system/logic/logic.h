@@ -107,7 +107,9 @@ public:
       }
 
       if (myMqtt && myMqtt->isConnected()) {
+		
         mqttTemp();
+		ESP_LOGI("MQTT_TEMP", "TEMP SENT TO BROKER!\n");
       }
 
       /**Watchdog for Logic.**/
@@ -143,18 +145,20 @@ private:
 	 * @brief Send the read temp to the MQTT Broker.
 	 * 
 	 */
-	void mqttTemp()
+	void mqttTemp(bool force = false)
 	{
+		std::lock_guard<std::mutex> lock(myMqttMutex); // Locks the function so that we avoid Race Condition.
 		static bool initialPublishDone = false;
-        if (!initialPublishDone) {
-          int tHel = myTemp->readTemperature();
-          char tempBuffer[20];
-          snprintf(tempBuffer, sizeof(tempBuffer), "%d.%d", tHel / 10,
-                   tHel % 10);
-          myMqtt->send(topic,
-                       reinterpret_cast<const std::uint8_t *>(tempBuffer),
-                       strlen(tempBuffer));
-          initialPublishDone = true;
+        if (!initialPublishDone || force) {
+			int tHel = myTemp->readTemperature();
+			char tempBuffer[20];
+			snprintf(tempBuffer, sizeof(tempBuffer), "%d.%d", tHel / 10,
+					tHel % 10);
+			myMqtt->send(topic,
+						reinterpret_cast<const std::uint8_t *>(tempBuffer),
+						strlen(tempBuffer));
+			ESP_LOGI("MQTT","Message sen to broker\n");
+          	if(!force) {initialPublishDone = true;}
         }
 	}
 
@@ -198,9 +202,10 @@ private:
         int tDeci = tHel % 10;
         snprintf(msg, sizeof(msg), "Temperature: %d.%d C\n", t, tDeci);
         mySerial->send(msg);
-
-		mqttTemp();
+        mqttTemp(true);
+		ESP_LOGI("MQTT_TEMP", "TEMP READ");
       }
+      
     }
     //--------- TOTAL STATUS ---------//
     else if (strcmp(buffer, "status") == 0) {
@@ -257,5 +262,6 @@ private:
   bool myInitialized;
   bool myIsBlinking;
   std::string topic = "sensor/temp";
+  std::mutex myMqttMutex; // Denna används för att låsa kritisk kod
 };
 } // namespace app::logic
