@@ -54,6 +54,7 @@ namespace driver::mqtt {
 		 */
 		void mqttInit() noexcept override;
 
+
 		/**Esp32s3 construct Forbidden moves/copy. **/
 		Esp32s3(const Esp32s3 &)            = delete; // No copy constructor.
 		Esp32s3(Esp32s3 &&)                 = delete; // No move constructor.

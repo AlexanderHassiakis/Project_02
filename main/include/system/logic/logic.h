@@ -56,16 +56,16 @@ public:
 
     int rxInd = 0;
     char menu[RxLen]{};
-
     if (myMqtt) {
       	myMqtt->mqttInit();
 
 	  	//Sending Temp read to MQTT
-	  	int tHel = myTemp->readTemperature();
-	  	char tempBuffer[20];
+		int tHel = myTemp->readTemperature();
+		char tempBuffer[20];
 		//String Number Print Formatted gör om till string!.
 		snprintf(tempBuffer, sizeof(tempBuffer), "%d.%d", tHel / 10, tHel % 10);
 		myMqtt->send(topic,reinterpret_cast<const std::uint8_t*>(tempBuffer),strlen(tempBuffer));
+		
 
 		// Connect MQTT callback passing topic and data.
 		std::function<void(const std::string &topic,const std::string &data)>callback{[this](const std::string &topic,const std::string &data) 
