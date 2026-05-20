@@ -80,6 +80,11 @@ namespace driver::mqtt {
 		 * @param event_data 
 		 */
 		static void mqttEventHandler(void* handler_args, esp_event_base_t base, int32_t event_id, void* event_data);
+
+
+		/**WIFI functions*/
+		void initWifi() noexcept;
+		static void wifiEventHandler(void* arg, esp_event_base_t event_base, int32_t event_id, void* event_data);
 	};
 
   		

@@ -6,8 +6,11 @@
 #include "driver/mqtt/esp32s3.h"
 #include "esp_log.h"
 #include "mqtt_client.h"
+#include "esp_wifi.h" // Wifi ESP
+#include "esp_netif.h" // (ESP Network Interface)
+#include "nvs_flash.h" // Wi-Fi-stacken kräver NVS för att lagra kalibreringsdata
 
-// TAG för ESP_LOG
+//ESP_LOG tag
 static const char *TAG = "MQTT_DRV";
 
 namespace driver::mqtt {
@@ -29,10 +32,10 @@ void Esp32s3::mqttInit() noexcept {
   if (myClient != nullptr) {
     return;
   }
+  initWifi();
 
   esp_mqtt_client_config_t mqttCfg = {};
-  mqttCfg.broker.address.uri =
-      "mqtt://broker.hivemq.com"; 
+  mqttCfg.broker.address.uri = "broker.hivemq.com";
 
   myClient = esp_mqtt_client_init(&mqttCfg);
   if (myClient == nullptr) {
@@ -45,6 +48,64 @@ void Esp32s3::mqttInit() noexcept {
   if (esp_mqtt_client_start(myClient) != ESP_OK) {
     ESP_LOGE(TAG, "Could not start MQTT Client!!");
   }
+}
+
+void Esp32s3::wifiEventHandler(void *arg, esp_event_base_t event_base,
+                               int32_t event_id, void *event_data) {
+  if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_START) {
+    esp_wifi_connect();
+  } else if (event_base == WIFI_EVENT &&
+             event_id == WIFI_EVENT_STA_DISCONNECTED) {
+    ESP_LOGW(TAG, "Tappade Wi-Fi! Försöker ansluta igen...");
+    esp_wifi_connect();
+  } else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP) {
+    ip_event_got_ip_t *event = (ip_event_got_ip_t *)event_data;
+    ESP_LOGI(TAG, "Wi-Fi Anslutet! Fick IP: " IPSTR,
+             IP2STR(&event->ip_info.ip));
+  }
+}
+
+void Esp32s3::initWifi() noexcept
+{
+  // 1. Initiera NVS (Non-Volatile Storage) - krävs av Wi-Fi-drivrutinen
+  esp_err_t ret = nvs_flash_init();
+  if (ret == ESP_ERR_NVS_NO_FREE_PAGES ||
+      ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
+    nvs_flash_erase();
+    nvs_flash_init();
+  }
+
+  // 2. Initiera nätverksstacken och den centrala eventloopen
+  esp_netif_init();
+  esp_event_loop_create_default(); // Skapar systemets event-loop
+  esp_netif_create_default_wifi_sta();
+
+  // 3. Konfigurera Wi-Fi i Station Mode (STA)
+  wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
+  esp_wifi_init(&cfg);
+
+  // 4. Registrera Wi-Fi-eventen
+  esp_event_handler_instance_register(WIFI_EVENT, ESP_EVENT_ANY_ID,
+                                      &Esp32s3::wifiEventHandler, nullptr,
+                                      nullptr);
+  esp_event_handler_instance_register(IP_EVENT, IP_EVENT_STA_GOT_IP,
+                                      &Esp32s3::wifiEventHandler, nullptr,
+                                      nullptr);
+
+  // 5. Sätt SSID och Lösenord
+  wifi_config_t wifi_config = {};
+  strcpy(reinterpret_cast<char *>(wifi_config.sta.ssid), "Esp32test");
+  strcpy(reinterpret_cast<char *>(wifi_config.sta.password),
+              "hassiakis");
+  wifi_config.sta.threshold.authmode = WIFI_AUTH_WPA2_PSK;
+
+  esp_wifi_set_mode(WIFI_MODE_STA);
+  esp_wifi_set_config(WIFI_IF_STA, &wifi_config);
+
+  // 6. Starta Wi-Fi!
+  ESP_LOGI(TAG, "Startar Wi-Fi...");
+  esp_wifi_start();
+
 }
 
 bool Esp32s3::isConnected() noexcept { return myConnectionStatus; }

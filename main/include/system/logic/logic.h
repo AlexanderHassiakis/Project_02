@@ -4,7 +4,7 @@
 #include <memory>
 #include <thread>
 
-// #include "esp_log.h"  if needed to debugg.
+#include "esp_log.h" // if needed to debugg.
 #include "driver/adc/interface.h"
 #include "driver/factory/interface.h"
 #include "driver/gpio/interface.h"
@@ -13,8 +13,6 @@
 #include "driver/tempsensor/interface.h"
 #include "driver/timer/interface.h"
 #include "driver/watchdog/interface.h"
-
-
 
 namespace app::logic {
 class Logic final {
@@ -30,8 +28,9 @@ public:
 	  	, myTimer{factory.timer()}
 		, myAdc{factory.adc(1)}
 		, myWatch{factory.watchdog()}
-		, myMqtt(factory.mqtt()),
-        myInitialized{false} {
+		, myMqtt(factory.mqtt())
+		,myInitialized{false}
+		,myIsBlinking{false} {
     /*Initialize hardware*/
 
     // Indicate failure if any of the pointers are nullptr.
@@ -54,33 +53,35 @@ public:
     if (!myInitialized) {
       return;
     }
-    bool isBlinking{false};
+
     int rxInd = 0;
-    char menu[128];
-    /*Menu for terminal commands.*/
-    snprintf(menu, sizeof(menu),
-             "\n-----Commands-----\n"
-             "Temp\n"
-             "blink\n"
-             "blink off\n"
-             "on = LED ON\n"
-             "off = LED OFF\n"
-             "status\n"
-             "period x \n");
-    mySerial->send(menu);
+    char menu[RxLen]{};
 
     if (myMqtt) {
       myMqtt->mqttInit();
 
-      
-      myMqtt->registerCallback([this, &isBlinking](const std::string &topic,
-                                                   const std::string &data) {
-        char mqttBuf[124];
-        snprintf(mqttBuf, sizeof(mqttBuf), "%s", data.c_str());
-		
-        this->processCommand(mqttBuf, isBlinking);
-      });
+	  // Connect MQTT callback passing topic and data.
+      std::function<void(const std::string &topic, const std::string &data)> 
+	      callback{[this](const std::string &topic, const std::string &data) {
+            this->mqttCallback(topic, data);
+          }};
+        myMqtt->registerCallback(callback);
+        ESP_LOGI("MQTT_TEST", "MQTT & WIFI WORKING!");
     }
+
+  
+    /*Menu for terminal commands.*/
+    snprintf(menu, sizeof(menu),
+             "\t\t\n-----Commands-----\n"
+             "For temprature\t\t=\ttemp\n"
+             "Start blink func\t=\tblink\n"
+             "Stop blink func\t\t=\tblink off\n"
+             "Turn on LED\t\t=\ton\n"
+             "Turn off LED\t\t=\toff\n"
+             "Status command\t\t=\tstatus\n"
+             "Change blink period\t=\tperiod\n");
+    mySerial->send(menu);
+
 
     /**Logic Loop */
     while (true) {
@@ -94,7 +95,7 @@ public:
           if (c == '\n' || c == '\r') {
             if (rxInd > 0) {
               myRxBuffer[rxInd] = '\0'; // Avsluta strängen.
-              processCommand(myRxBuffer, isBlinking);
+              processCommand(myRxBuffer);
               rxInd = 0;
             }
           } else {
@@ -104,9 +105,9 @@ public:
           }
         }
       }
-      /** If isBlinking & myTimer & isTimeout is true, The led will toggle on or
+      /** If myIsBlinking & myTimer & isTimeout is true, The led will toggle on or
        * off**/
-      if (isBlinking && myTimer->hasExpired()) 
+      if (myIsBlinking && myTimer->hasExpired()) 
 	  {myLed->toggle(); myTimer->start(); }
 
       /**Watchdog for Logic.**/
@@ -115,34 +116,40 @@ public:
   }
 
 private:
-  /**
-   * @brief All inputs and repsonses for Terminal.
-   * * @param buffer
-   * @param isBlinking
-   */
-  void processCommand(char *buffer, bool &isBlinking) {
+  void mqttCallback(const std::string &topic, const std::string &data) noexcept
+  {
+      // Kalla på process command med mera, när du har tagit reda på vad du ska göra.
+	  const char* buffer{data.c_str()};
+	  processCommand(buffer);
+  }
+
+      /**
+       * @brief All inputs and repsonses for Terminal.
+       * * @param buffer
+       */
+      void processCommand(const char *buffer) {
     //--------- LED ON ---------//
     if (strcmp(buffer, "on") == 0) {
-      isBlinking = false;
+      myIsBlinking = false;
       myLed->output(true);
       mySerial->send("LED is constant ON!\n");
     }
     //--------- LED OFF ---------//
     else if (strcmp(buffer, "off") == 0) {
-      isBlinking = false;
+      myIsBlinking = false;
       myLed->output(false);
       mySerial->send("LED is OFF!\n");
     }
     //--------- BLINK ON ---------//
     else if (strcmp(buffer, "blink") == 0) {
-      isBlinking = true;
+      myIsBlinking = true;
 
       myTimer->start();
       mySerial->send("Blinking Started\n");
     }
     //--------- BLINK OFF ---------//
     else if (strcmp(buffer, "blink off") == 0) {
-      isBlinking = false;
+      myIsBlinking = false;
       myLed->output(false);
       myTimer->stop();
       mySerial->send("Blinking stopped\n");
@@ -153,7 +160,7 @@ private:
         char msg[48];
         int tHel = myTemp->readTemperature();
         int t = tHel / 10;
-        int tDeci = t % 10;
+        int tDeci = tHel % 10;
         snprintf(msg, sizeof(msg), "Temperature: %d.%d C\n", t, tDeci);
         mySerial->send(msg);
       }
@@ -162,7 +169,7 @@ private:
     else if (strcmp(buffer, "status") == 0) {
       char msg[128];
       int t = (myTemp) ? (myTemp->readTemperature()) / 10 : 0;
-      const char *blinkStr = isBlinking ? "ON" : "OFF";
+      const char *blinkStr = myIsBlinking ? "ON" : "OFF";
       int ledLevel = myLed->input();
       int tDeci = t % 10;
 
@@ -211,5 +218,6 @@ private:
   std::unique_ptr<driver::watchdog::Interface> myWatch;
   std::unique_ptr<driver::mqtt::Interface> myMqtt;
   bool myInitialized;
+  bool myIsBlinking;
 };
 } // namespace app::logic

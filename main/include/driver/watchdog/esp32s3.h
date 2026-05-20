@@ -22,6 +22,6 @@ public:
 
 private:
     /** Sleep time to reset the watchdog (we need to enter sleep mode for the RTOS to reset it). */
-    static constexpr std::uint8_t sleepTime_ms{5U};
+    static constexpr std::uint8_t sleepTime_ms{10U};
 };
 } // namespace driver::watchdog
