@@ -158,7 +158,7 @@ void Esp32s3::mqttEventHandler(void *handler_args, esp_event_base_t base,
   case MQTT_EVENT_CONNECTED:
     ESP_LOGI(TAG, "MQTT_EVENT_CONNECTED: Connected to Broker!");
     instance->myConnectionStatus = true;
-    esp_mqtt_client_subscribe(event->client, "ESP32_Commands", 1);
+    esp_mqtt_client_subscribe(event->client, "ESP32_Commands", 1);  // HARDCODE FOR RECIVED TOPICS!! ALLWAYS USE ESP32_Commands In topics.
     break;
 
   case MQTT_EVENT_DISCONNECTED:

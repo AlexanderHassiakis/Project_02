@@ -4,7 +4,6 @@
 #include <memory>
 #include <thread>
 
-#include "esp_log.h" // if needed to debugg.
 #include "driver/adc/interface.h"
 #include "driver/factory/interface.h"
 #include "driver/gpio/interface.h"
@@ -13,6 +12,8 @@
 #include "driver/tempsensor/interface.h"
 #include "driver/timer/interface.h"
 #include "driver/watchdog/interface.h"
+#include "esp_log.h" // if needed to debugg.
+
 
 namespace app::logic {
 class Logic final {
@@ -22,15 +23,10 @@ public:
    * * @param factory
    */
   explicit Logic(driver::factory::Interface &factory)
-      	: myRxBuffer{}
-	  	, mySerial{factory.serial()}
-	  	, myLed{factory.gpio(4U)}
-	  	, myTimer{factory.timer()}
-		, myAdc{factory.adc(1)}
-		, myWatch{factory.watchdog()}
-		, myMqtt(factory.mqtt())
-		,myInitialized{false}
-		,myIsBlinking{false} {
+      : myRxBuffer{}, mySerial{factory.serial()}, myLed{factory.gpio(4U)},
+        myTimer{factory.timer()}, myAdc{factory.adc(1)},
+        myWatch{factory.watchdog()}, myMqtt(factory.mqtt()),
+        myInitialized{false}, myIsBlinking{false} {
     /*Initialize hardware*/
 
     // Indicate failure if any of the pointers are nullptr.
@@ -41,6 +37,18 @@ public:
       myTemp = factory.tempSensor(1, *myAdc);
       myWatch->reset();
       myInitialized = true;
+
+      // ÄNDRING: Flyttat mqttInit() och callback-registreringen till
+      // konstruktorn så det körs direkt vid boot
+      if (myMqtt) {
+        myMqtt->mqttInit();
+
+        std::function<void(const std::string &topic, const std::string &data)>
+            callback{[this](const std::string &topic, const std::string &data) {
+              this->mqttCallback(topic, data);
+            }};
+        myMqtt->registerCallback(callback);
+      }
     } else {
       //   ESP_LOGI("Initialize hardware", "FAILURE TO Initialize hardware!\n");
     }
@@ -56,27 +64,10 @@ public:
 
     int rxInd = 0;
     char menu[RxLen]{};
-    if (myMqtt) {
-      	myMqtt->mqttInit();
 
-	  	//Sending Temp read to MQTT
-		int tHel = myTemp->readTemperature();
-		char tempBuffer[20];
-		//String Number Print Formatted gör om till string!.
-		snprintf(tempBuffer, sizeof(tempBuffer), "%d.%d", tHel / 10, tHel % 10);
-		myMqtt->send(topic,reinterpret_cast<const std::uint8_t*>(tempBuffer),strlen(tempBuffer));
-		
+    // ÄNDRING: Tagit bort det asynkrona och felaktigt timade mqttInit()-blocket
+    // som låg här i början av run()
 
-		// Connect MQTT callback passing topic and data.
-		std::function<void(const std::string &topic,const std::string &data)>callback{[this](const std::string &topic,const std::string &data) 
-		{
-			this->mqttCallback(topic, data);
-		}};
-		myMqtt->registerCallback(callback);
-		ESP_LOGI("MQTT_TEST", "MQTT & WIFI WORKING!");
-    }
-
-  
     /*Menu for terminal commands.*/
     snprintf(menu, sizeof(menu),
              "\t\t\n-----Commands-----\n"
@@ -88,7 +79,6 @@ public:
              "Status command\t\t=\tstatus\n"
              "Change blink period\t=\tperiod\n");
     mySerial->send(menu);
-
 
     /**Logic Loop */
     while (true) {
@@ -112,29 +102,57 @@ public:
           }
         }
       }
-      /** If myIsBlinking & myTimer & isTimeout is true, The led will toggle on or
-       * off**/
-      if (myIsBlinking && myTimer->hasExpired()) 
-	  {myLed->toggle(); myTimer->start(); }
+      /** If myIsBlinking & myTimer & isTimeout is true, The led will toggle on
+       * or off**/
+      if (myIsBlinking && myTimer->hasExpired()) {
+        myLed->toggle();
+        myTimer->start();
+      }
+
+      // ÄNDRING: Lagt till ett villkor som säkert skickar det första
+      // temperaturvärdet först NÄR nätverk och MQTT är redo
+      if (myMqtt && myMqtt->isConnected()) {
+        static bool initialPublishDone = false;
+        if (!initialPublishDone) {
+          int tHel = myTemp->readTemperature();
+          char tempBuffer[20];
+          snprintf(tempBuffer, sizeof(tempBuffer), "%d.%d", tHel / 10,
+                   tHel % 10);
+          myMqtt->send(topic,
+                       reinterpret_cast<const std::uint8_t *>(tempBuffer),
+                       strlen(tempBuffer));
+          initialPublishDone = true;
+        }
+      }
 
       /**Watchdog for Logic.**/
       myWatch->reset();
+
+      // ÄNDRING: Lagt till en kort sleep för att ge FreeRTOS bakgrundstaskar
+      // (Wi-Fi/MQTT) tid att exekvera och förhindra CPU-mättnad
+      std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
   }
 
 private:
-  void mqttCallback(const std::string &topic, const std::string &data) noexcept
-  {
-      // Kalla på process command med mera, när du har tagit reda på vad du ska göra.
-	  const char* buffer{data.c_str()};
-	  processCommand(buffer);
-  }
+	void mqttCallback(const std::string &topic,const std::string &data) noexcept {
+		char mqttBuffer[RxLen]{}; // Buffer needed to have more than on letter/number saved.
+		size_t copyLen = (data.length() < (RxLen - 1)) ? data.length() : (RxLen - 1);
+		memcpy(mqttBuffer, data.data(), copyLen); // memory copy (minneskopiering)
+		mqttBuffer[copyLen] = '\0';
 
-      /**
-       * @brief All inputs and repsonses for Terminal.
-       * * @param buffer
-       */
-      void processCommand(const char *buffer) {
+		// KORRIGERING: Ändrat logg-makrot så att det faktiskt skriver ut strängen i terminalen med %s
+		ESP_LOGI("MQTT_MSG", "Mottog MQTT-meddelande: %s", mqttBuffer);
+
+		// KORRIGERING: Tog bort den överflödiga "const char *buffer"-raden som inte användes
+		processCommand(mqttBuffer);
+	}
+
+  /**
+   * @brief All inputs and repsonses for Terminal.
+   * * @param buffer
+   */
+  void processCommand(const char *buffer) {
     //--------- LED ON ---------//
     if (strcmp(buffer, "on") == 0) {
       myIsBlinking = false;
