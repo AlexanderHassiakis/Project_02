@@ -1,4 +1,4 @@
-# EXEMPEL README STRUKTUR:
+# EXEMPEL README STRUKTUR: Vi fyller på med info :D
 
 
 # P02+ – IoT-extension av driverbiblioteket
@@ -6,8 +6,10 @@
 Kort och kärnfull beskrivning av projektet. Till exempel: "En utökning av ett inbäddat drivrutinsbibliotek för ESP32-S3 skriven i C++, med fokus på objektorienterad arkitektur, nätverkskommunikation via MQTT, samt hårdvaruoberoende testning med hjälp av stubs."
 
 ## 👥 Gruppmedlemmar
-* **Namn Namnsson** (Användarnamn/Email) - 
-* **Namn Namnsson** (Användarnamn/Email) - 
+* **Alexander Hassiakis** (Användarnamn/Email) - 
+* **Suhaib Qasim** (Användarnamn/Email) - 
+* **Tim Raymond Tun** (Användarnamn/Email) - 
+* **Fadi Lazkani** (Användarnamn/Email) - 
 
 ---
 
@@ -53,14 +55,27 @@ strlcpy(reinterpret_cast<char *>(wifi_config.sta.password), "DITT_LÖSENORD", ..
 
 --- 
 
-## 1 Konfigurera projekt ifall man vill köra i terminalen.
- idf.py menuconfig
+## 1. Konfigureras ifall man vill köra kommandon i ESP-IDF terminalen.
+ * idf.py menuconfig
+ * Sök på Channel for console output
+ * Ändra från defult till USB Serial/JTAG Controller
+
+## 1.5 Putty 
+* Starta Putty
+* Sätt dessa inställningar.
+    1. Baud : 115200
+    2. Connection Typ: Serial
+    3. Line discipline option : ALL 'on force on'
+    4. Implicit CR & LF : Markerade
+    5. SSH/Parity : None
+    6. SSH/Flow control : None
 
 ## 2. Bygg koden
-idf.py fullclean
-idf.py reconfigure
-idf.py build
+* idf.py fullclean
+* idf.py reconfigure
+* idf.py build
 
 ## 3. Flashat till ESP32-S3 och starta serieövervakaren
-idf.py flash 'COM' monitor
+* idf.py flash 'Val of PORT ex: COM9' monitor
+
 
