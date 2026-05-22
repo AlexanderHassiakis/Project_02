@@ -51,7 +51,8 @@ Innan du bygger, öppna `source/driver/mqtt/esp32s3.cpp` och ändra dina Wi-Fi-u
 strlcpy(reinterpret_cast<char *>(wifi_config.sta.ssid), "DITT_WIFI_NAMN", ...);
 strlcpy(reinterpret_cast<char *>(wifi_config.sta.password), "DITT_LÖSENORD", ...);
 ```
-### TOPIC : ESP32_Commands för att skicka kommando över MQTT.
+### TOPIC : ESP32_Commands för att skicka kommando över MQTT
+* Lägg till sensor/temp i topic:s under advandced i MQTT explorer.
 
 --- 
 
