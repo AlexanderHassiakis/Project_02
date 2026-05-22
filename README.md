@@ -48,16 +48,19 @@ Innan du bygger, öppna `source/driver/mqtt/esp32s3.cpp` och ändra dina Wi-Fi-u
 ```cpp
 strlcpy(reinterpret_cast<char *>(wifi_config.sta.ssid), "DITT_WIFI_NAMN", ...);
 strlcpy(reinterpret_cast<char *>(wifi_config.sta.password), "DITT_LÖSENORD", ...);
+```
+### TOPIC : ESP32_Commands för att skicka kommando över MQTT.
 
-// Simulera att någon på internet tryckte på "on" i sin app:
-TOPIC : ESP32_Commands för att skicka kommando över MQTT.
+--- 
 
-# 1. Konfigurera projektet (om nödvändigt)
-idf.py menuconfig
+## 1 Konfigurera projekt ifall man vill köra i terminalen.
+ idf.py menuconfig
 
-# 2. Bygg koden
+## 2. Bygg koden
+idf.py fullclean
+idf.py reconfigure
 idf.py build
 
-# 3. Flashat till ESP32-S3 och starta serieövervakaren
-idf.py flash monitor
+## 3. Flashat till ESP32-S3 och starta serieövervakaren
+idf.py flash 'COM' monitor
 
