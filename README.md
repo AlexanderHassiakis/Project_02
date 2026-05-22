@@ -63,12 +63,12 @@ strlcpy(reinterpret_cast<char *>(wifi_config.sta.password), "DITT_LÖSENORD", ..
 ## 1.5 Putty 
 * Starta Putty
 * Sätt dessa inställningar.
-    1. Baud : 115200
-    2. Connection Typ: Serial
-    3. Line discipline option : ALL 'on force on'
-    4. Implicit CR & LF : Markerade
-    5. SSH/Parity : None
-    6. SSH/Flow control : None
+    * Baud : 115200
+    * Connection Typ: Serial
+    * Line discipline option : ALL 'on force on'
+    * Implicit CR & LF : Markerade
+    * SSH/Parity : None
+    * SSH/Flow control : None
 
 ## 2. Bygg koden
 * idf.py fullclean
