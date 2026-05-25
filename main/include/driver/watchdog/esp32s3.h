@@ -1,8 +1,6 @@
 #pragma once
 
 #include <cstdint>
-
-// För ESP32 Delay
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
@@ -14,14 +12,11 @@ public:
 
 	void reset() noexcept override
 	{	
-		// This is the "Watchdog feeding".
-		// pdMS_TO_TICKS(10) tells the system:
-		// "I am pausing for 10 milliseconds, let other processes run."
 		vTaskDelay(pdMS_TO_TICKS(sleepTime_ms)); // Delay for loopen.
 	}
 
 private:
     /** Sleep time to reset the watchdog (we need to enter sleep mode for the RTOS to reset it). */
-    static constexpr std::uint8_t sleepTime_ms{10U}; // Set 25 for testing
+    static constexpr std::uint8_t sleepTime_ms{10U}; 
 };
 } // namespace driver::watchdog

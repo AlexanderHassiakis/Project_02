@@ -14,7 +14,7 @@ namespace driver::tempsensor {
     Tmp36::Tmp36(driver::adc::Interface& adc, uint8_t channel) noexcept 
         :refBorrowAdc(adc), channelAdc(channel)
     {
-      ESP_LOGI("TMP36", "ADC-resurser Skapade.");
+      ESP_LOGI("TMP36", "ADC-resurces created.");
     }
 
 

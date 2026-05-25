@@ -108,7 +108,7 @@ public:
 
           if (c == '\n' || c == '\r') {
             if (rxInd > 0) {
-              myRxBuffer[rxInd] = '\0'; // Avsluta strängen.
+              myRxBuffer[rxInd] = '\0'; // ends the string.
               processCommand(myRxBuffer);
               rxInd = 0;
             }
