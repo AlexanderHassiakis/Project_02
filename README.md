@@ -24,20 +24,6 @@ Detta projekt bygger vidare på arkitekturen från P02. Systemet är strikt lage
   2. `Stub`: Simulerade drivrutiner för lokal testning på datorn utan hårdvara.
 * **Tunn Main:** `main.cpp` innehåller ingen applikationslogik, utan initierar bara fabriken och startar `Logic::run()`.
 
----
-
-## 🚀 Funktioner (Mål för G/VG)
-
-### G-Krav (Uppfyllda)
-* [x] **MQTT-Driver:** Full integration med ESP-IDF:s MQTT-klient och anslutning till HiveMQ-broker.
-* [x] **Styrning via MQTT:** Systemet lyssnar på topic `ESP32_Commands` och tolkar kommandon (`on`, `off`, `blink`, `blink off`, `period x`) via klassens interna kommandotolk.
-* [x] **Telemetri (Temperatur):** Systemet läser periodiskt av TMP36-sensorn via ADC och publicerar datan på topic `sensor/temp`.
-
-### VG-Krav (Om tillämpligt)
-* [ ] **Lägre kommunikationslager:** Implementerat [I2C / CAN / RS-485] för kommunikation med extern hårdvara.
-* [ ] **Gateway-funktion:** MQTT-kommandon skickas vidare till det lägre lagret, och sensordata från det lägre lagret publiceras upp till MQTT.
-
----
 
 ## 🛠️ Hur man bygger och kör projektet
 
