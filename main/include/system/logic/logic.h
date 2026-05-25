@@ -4,6 +4,7 @@
 #include <memory>
 #include <thread>
 #include <mutex>
+#include <atomic>
 
 #include "driver/adc/interface.h"
 #include "driver/factory/interface.h"
@@ -28,7 +29,7 @@ public:
         myTimer{factory.timer()}, myAdc{factory.adc(1)},
         myWatch{factory.watchdog()}, myMqtt(factory.mqtt()),
         myInitialized{false}, myIsBlinking{false} {
-    /*Initialize hardware*/
+    /*Initialize hardware at Boot*/
 
     // Indicate failure if any of the pointers are nullptr.
     if (mySerial && myLed && myTimer && myAdc && myWatch) {
@@ -39,8 +40,6 @@ public:
       myWatch->reset();
       myInitialized = true;
 
-      // ÄNDRING: Flyttat mqttInit() och callback-registreringen till
-      // konstruktorn så det körs direkt vid boot
       if (myMqtt) {
         myMqtt->mqttInit();
 
@@ -50,9 +49,8 @@ public:
             }};
         myMqtt->registerCallback(callback);
       }
-    } else {
-      //   ESP_LOGI("Initialize hardware", "FAILURE TO Initialize hardware!\n");
-    }
+    } 
+    else {ESP_LOGI("Initialize hardware", "FAILURE TO Initialize hardware!\n");}
   }
 
   /**
@@ -75,12 +73,33 @@ public:
              "Turn off LED\t\t=\toff\n"
              "Status command\t\t=\tstatus\n"
              "Change blink period\t=\tperiod\n");
-    mySerial->send(menu);
-
-
+    {
+        std::lock_guard<std::mutex> lock(mySerialMutex);
+        mySerial->send(menu);
+    }
+    static bool hasSentInitialTemp = false;
+    
     /**Logic Loop */
     while (true) {
+
+      /**Watchdog for Logic.**/
+      myWatch->reset();
+
+      /** If myIsBlinking & myTimer & isTimeout is true, The led will toggle on
+       * or off**/
+      if (myIsBlinking && myTimer->hasExpired()) {
+        myLed->toggle();
+        myTimer->start();
+      }
+
+      if (!hasSentInitialTemp && myMqtt && myMqtt->isConnected()) {
+          ESP_LOGI("MQTT_MSG", "TEMP SENT TO BROKER!");
+          mqttTemp(true);
+          hasSentInitialTemp = true;
+      }
+
       if (mySerial) {
+
         uint8_t temporaryBuf[64];
         uint16_t bytes = mySerial->received(temporaryBuf, sizeof(temporaryBuf));
 
@@ -100,22 +119,6 @@ public:
           }
         }
       }
-      /** If myIsBlinking & myTimer & isTimeout is true, The led will toggle on
-       * or off**/
-      if (myIsBlinking && myTimer->hasExpired()) {
-        myLed->toggle();
-        myTimer->start();
-      }
-
-      if (myMqtt && myMqtt->isConnected()) {
-		
-        mqttTemp();
-		ESP_LOGI("MQTT_TEMP", "TEMP SENT TO BROKER!\n");
-      }
-
-      /**Watchdog for Logic.**/
-      myWatch->reset();
-	  
     }
   }
 
@@ -128,15 +131,11 @@ private:
 	 */
 	void mqttCallback(const std::string &topic,const std::string &data) noexcept {
 		char mqttBuffer[RxLen]{}; // Buffer needed to have more than on letter/number saved.
-		size_t copyLen = (data.length() < (RxLen - 1)) ? data.length() : (RxLen - 1); //  Checl data.lenght to be smaller than RxLen else it will be max size Rxlen.
+		size_t copyLen = (data.length() < (RxLen - 1)) ? data.length() : (RxLen - 1); // Checks data lenght to be smaller than RxLen else it will be max size Rxlen.
 		memcpy(mqttBuffer, data.data(), copyLen); // memory copy (minneskopiering)
-		//Dess enda uppgift är att kopiera ett specificerat antal bytes från ett ställe i arbetsminnet (RAM) till ett annat.
+        // Its sole purpose is to copy a specified number of bytes from one location in RAM to another.
 		mqttBuffer[copyLen] = '\0';
-
-		// KORRIGERING: Ändrat logg-makrot så att det faktiskt skriver ut strängen i terminalen med %s
-		ESP_LOGI("MQTT_MSG", "Mottog MQTT-meddelande: %s", mqttBuffer);
-
-		// KORRIGERING: Tog bort den överflödiga "const char *buffer"-raden som inte användes
+		ESP_LOGI("MQTT_MSG", "Recived MQTT-Message: %s", mqttBuffer);
 		processCommand(mqttBuffer);
 	}
 
@@ -148,26 +147,26 @@ private:
 	 */
 	void mqttTemp(bool force = false)
 	{
-		std::lock_guard<std::mutex> lock(myMqttMutex); // Locks the function so that we avoid Race Condition.
-		static bool initialPublishDone = false;
-        if (!initialPublishDone || force) {
-			int tHel = myTemp->readTemperature();
-			char tempBuffer[20];
-			snprintf(tempBuffer, sizeof(tempBuffer), "%d.%d", tHel / 10,
-					tHel % 10);
-			myMqtt->send(topic,
-						reinterpret_cast<const std::uint8_t *>(tempBuffer),
-						strlen(tempBuffer));
-			ESP_LOGI("MQTT","Message sen to broker\n");
-          	if(!force) {initialPublishDone = true;}
+        std::lock_guard<std::mutex> lock(myMqttMutex); // Locks the function so that we avoid Race Condition.
+		
+        if(force) {
+            int tHel = myTemp->readTemperature();
+            char tempBuffer[20];
+            snprintf(tempBuffer, sizeof(tempBuffer), "%d.%d", tHel / 10,tHel % 10);
+            myMqtt->send(topic,reinterpret_cast<const std::uint8_t *>(tempBuffer),strlen(tempBuffer));
+            ESP_LOGI("MQTT_MSG","Message sent to broker");
         }
+
 	}
+
 
   /**
    * @brief All inputs and repsonses for Terminal.
    * * @param buffer
    */
   void processCommand(const char *buffer) {
+
+    std::lock_guard<std::mutex> serialLock(mySerialMutex);
     //--------- LED ON ---------//
     if (strcmp(buffer, "on") == 0) {
       myIsBlinking = false;
@@ -203,18 +202,23 @@ private:
         int tDeci = tHel % 10;
         snprintf(msg, sizeof(msg), "Temperature: %d.%d C\n", t, tDeci);
         mySerial->send(msg);
-        mqttTemp(true);
-		ESP_LOGI("MQTT_TEMP", "TEMP READ");
+
+        if (myMqtt && myMqtt->isConnected()) {
+          ESP_LOGI("MQTT_MSG", "Tvingar iväg MQTT-avläsning från terminalen");
+          mqttTemp(true);
+        }
+        else{ESP_LOGI("MQTT_MSG", "Kunde inte skicka MQTT, inte ansluten.");}
       }
       
     }
     //--------- TOTAL STATUS ---------//
     else if (strcmp(buffer, "status") == 0) {
       char msg[128];
-      int t = (myTemp) ? (myTemp->readTemperature()) / 10 : 0;
+      int tRaw = (myTemp) ? (myTemp->readTemperature()) : 0;
+      int t = tRaw / 10;
       const char *blinkStr = myIsBlinking ? "ON" : "OFF";
       int ledLevel = myLed->input();
-      int tDeci = t % 10;
+      int tDeci = tRaw % 10;
 
       snprintf(msg, sizeof(msg),
                "\n----- STATUS -----\n"
@@ -232,13 +236,11 @@ private:
           myTimer->stop();
           myTimer->setPeriod(static_cast<uint32_t>(newDelay));
           myTimer->start();
-          // ESP_LOGI("TIMER","uint value set to:
-          // %lu",static_cast<uint32_t>(newDelay));
           char msg[48];
           snprintf(msg, sizeof(msg), "Period set to %d ms\n", newDelay);
           mySerial->send(msg);
         } else {
-          mySerial->send("ERROR: Period too low!\n");
+          mySerial->send("ERROR: Period too low!");
         }
       }
     } else {
@@ -256,13 +258,18 @@ private:
   std::unique_ptr<driver::serial::Interface> mySerial;
   std::unique_ptr<driver::gpio::Interface> myLed;
   std::unique_ptr<driver::timer::Interface> myTimer;
-  std::unique_ptr<driver::tempsensor::Interface> myTemp;
+
   std::unique_ptr<driver::adc::Interface> myAdc;
+  std::unique_ptr<driver::tempsensor::Interface> myTemp;
+
   std::unique_ptr<driver::watchdog::Interface> myWatch;
   std::unique_ptr<driver::mqtt::Interface> myMqtt;
   bool myInitialized;
   bool myIsBlinking;
+
+
   std::string topic = "sensor/temp";
-  std::mutex myMqttMutex; // Denna används för att låsa kritisk kod
+  std::mutex myMqttMutex; // Protects Mqtt for race.
+  std::mutex mySerialMutex; //  Protect that more than one is writing to Uart/serial at once
 };
 } // namespace app::logic

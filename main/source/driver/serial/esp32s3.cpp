@@ -2,12 +2,12 @@
 #include <cstdio>
 #include <cstring>
 
-#include "driver/gpio.h"       // För att styra pinnar
+#include "driver/gpio.h"      
 #include "driver/uart.h"    
 #include "driver/usb_serial_jtag.h"
-#include "esp_log.h"           // För snygg debugging (ESP_LOGI)
-#include "freertos/FreeRTOS.h" // Krävs för task-hantering och köer
-#include "freertos/queue.h"    // För UART-events (avbrott)
+#include "esp_log.h"           
+#include "freertos/FreeRTOS.h" 
+#include "freertos/queue.h"    
 
 #include "driver/serial/esp32s3.h"
 
@@ -17,6 +17,7 @@ namespace driver::serial {
     {
     // Delay for write/read operations.
     constexpr std::uint16_t delay_ms{100U};
+    constexpr std::uint16_t delay_zero{0U};
     } // namespace
 
     Esp32s3::Esp32s3() noexcept
@@ -64,7 +65,7 @@ namespace driver::serial {
     std::uint16_t Esp32s3::received(std::uint8_t *buf, std::uint16_t bufLen) noexcept {
         // Checks if there is a msg/data available.
         if (!myConnectionStatus || (nullptr == buf) || (bufLen == 0)) return 0U;
-        const int bytesRead{usb_serial_jtag_read_bytes(buf, bufLen, pdMS_TO_TICKS(delay_ms))};
+        const int bytesRead{usb_serial_jtag_read_bytes(buf, bufLen, delay_zero)}; // Delay set to zero 
         return 0 < bytesRead ? static_cast<std::uint16_t>(bytesRead) : 0U;
     }
 
