@@ -204,10 +204,9 @@ private:
         mySerial->send(msg);
 
         if (myMqtt && myMqtt->isConnected()) {
-          ESP_LOGI("MQTT_MSG", "Tvingar iväg MQTT-avläsning från terminalen");
+          ESP_LOGI("MQTT_MSG", "Force temp update to MQTT");
           mqttTemp(true);
         }
-        else{ESP_LOGI("MQTT_MSG", "Kunde inte skicka MQTT, inte ansluten.");}
       }
       
     }
