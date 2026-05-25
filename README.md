@@ -3,13 +3,13 @@
 
 # P02+ – IoT-extension av driverbiblioteket
 
-Kort och kärnfull beskrivning av projektet. Till exempel: "En utökning av ett inbäddat drivrutinsbibliotek för ESP32-S3 skriven i C++, med fokus på objektorienterad arkitektur, nätverkskommunikation via MQTT, samt hårdvaruoberoende testning med hjälp av stubs."
+En utökning av ett inbäddat drivrutinsbibliotek för ESP32-S3 skriven i C++, med fokus på objektorienterad arkitektur, nätverkskommunikation via MQTT, samt hårdvaruoberoende testning med hjälp av stubs.
 
 ## 👥 Gruppmedlemmar
-* **Alexander Hassiakis** (Användarnamn/Email) - 
-* **Suhaib Qasim** (Användarnamn/Email) - 
-* **Tim Raymond Tun** (Användarnamn/Email) - 
-* **Fadi Lazkani** (Användarnamn/Email) - 
+* **Alexander Hassiakis** 
+* **Suhaib Qasim** 
+* **Tim Raymond Tun** 
+* **Fadi Lazkani** 
 
 ---
 

@@ -14,7 +14,7 @@
 #include "driver/tempsensor/interface.h"
 #include "driver/timer/interface.h"
 #include "driver/watchdog/interface.h"
-#include "esp_log.h" // if needed to debugg.
+// #include "esp_log.h" // if needed to debugg.
 
 
 namespace app::logic {
@@ -50,7 +50,7 @@ public:
         myMqtt->registerCallback(callback);
       }
     } 
-    else {ESP_LOGI("Initialize hardware", "FAILURE TO Initialize hardware!\n");}
+    // else {ESP_LOGI("Initialize hardware", "FAILURE TO Initialize hardware!\n");}
   }
 
   /**
@@ -93,7 +93,7 @@ public:
       }
 
       if (!hasSentInitialTemp && myMqtt && myMqtt->isConnected()) {
-          ESP_LOGI("MQTT_MSG", "TEMP SENT TO BROKER!");
+        //   ESP_LOGI("MQTT_MSG", "TEMP SENT TO BROKER!");
           mqttTemp(true);
           hasSentInitialTemp = true;
       }
@@ -135,7 +135,7 @@ private:
 		memcpy(mqttBuffer, data.data(), copyLen); // memory copy (minneskopiering)
         // Its sole purpose is to copy a specified number of bytes from one location in RAM to another.
 		mqttBuffer[copyLen] = '\0';
-		ESP_LOGI("MQTT_MSG", "Recived MQTT-Message: %s", mqttBuffer);
+		// ESP_LOGI("MQTT_MSG", "Recived MQTT-Message: %s", mqttBuffer);
 		processCommand(mqttBuffer);
 	}
 
@@ -154,7 +154,7 @@ private:
             char tempBuffer[20];
             snprintf(tempBuffer, sizeof(tempBuffer), "%d.%d", tHel / 10,tHel % 10);
             myMqtt->send(topic,reinterpret_cast<const std::uint8_t *>(tempBuffer),strlen(tempBuffer));
-            ESP_LOGI("MQTT_MSG","Message sent to broker");
+            // ESP_LOGI("MQTT_MSG","Message sent to broker");
         }
 
 	}
@@ -204,7 +204,7 @@ private:
         mySerial->send(msg);
 
         if (myMqtt && myMqtt->isConnected()) {
-          ESP_LOGI("MQTT_MSG", "Force temp update to MQTT");
+        //   ESP_LOGI("MQTT_MSG", "Force temp update to MQTT");
           mqttTemp(true);
         }
       }

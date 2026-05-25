@@ -52,7 +52,7 @@ public:
 				// Print message if valid.
 			if (nullptr != msg) { std::printf("%s Will be sent!\n", msg); }
 			myMsg = msg;
-			myDataAvailable = true;
+
 		}
 
 		void send(const std::uint8_t *buf, std::uint16_t bufLen) noexcept override
@@ -65,8 +65,6 @@ public:
 			{
 				myDataMsg[i] = buf[i];
 			}
-
-			myDataAvailable = true;
 			std::printf("[UART Stub] sent %u bytes.\n",copyLen);
 
 		}
@@ -83,18 +81,23 @@ public:
 		std::uint16_t received(std::uint8_t *buf, std::uint16_t bufLen) noexcept override
 		{
 			//Checks if there is a msg/data available.
-			if (!myDataAvailable) { return 0U;};
-			std::printf("Message recived:\n");
-			std::printf("%s\n",myMsg);
-			if ( buf != nullptr && bufLen > 0)
-			{
-				for (size_t i = 0; i < bufLen; i++)
-				{
-					std::printf("%u",buf[i]);
-				}
-			}
-			myDataAvailable = false;
-			return 1U;
+			// if (!myDataAvailable) { return 0U;};
+			// std::printf("Message recived:\n");
+			// std::printf("%s\n",myMsg);
+			// if ( buf != nullptr && bufLen > 0)
+			// {
+			// 	for (size_t i = 0; i < bufLen; i++)
+			// 	{
+			// 		std::printf("%u",buf[i]);
+			// 	}
+			// }
+			// myDataAvailable = false;
+			// return 1U;
+
+			(void)buf;    
+            (void)bufLen; 
+            
+            return 0U;
 		}
 		
 		/**
@@ -108,9 +111,12 @@ public:
 		 */
 		std::uint16_t received(const char *str, std::uint16_t strLen) noexcept override
 		{
-			// Cast to byte array to call the main received function.
-			std::uint8_t *buf{reinterpret_cast<std::uint8_t *>(const_cast<char *>(str))};
-			return received(buf, strLen);
+			(void)str;
+            (void)strLen;
+            return 0U;
+			// // Cast to byte array to call the main received function.
+			// std::uint8_t *buf{reinterpret_cast<std::uint8_t *>(const_cast<char *>(str))};
+			// return received(buf, strLen);
 		}
 
 		/**

@@ -9,20 +9,32 @@
 
 namespace driver::mqtt {
 
-// Klassen måste ärva från ditt Interface (t.ex. public Interface)
+
 class Stub : public Interface {
 public:
+  /**
+   * @brief Global viewable pointer to find the stub during wsl.
+   * 
+   */
+  static inline Stub *latestInstance{nullptr};
   /**
    * @brief Construct a new Stub object
    */
   Stub() noexcept
-      : myConnected{false}, myData{}, myStoredTopic{""},
-        myDataCallback{nullptr} {}
+      : myData{}, myStoredTopic{""}, myConnected{false},
+        myDataCallback{nullptr} {latestInstance = this;}
 
   /**
    * @brief Destroy the Stub object
    */
-  ~Stub() noexcept override = default;
+    ~Stub() noexcept override 
+    { 
+        if (latestInstance == this)
+        {
+            latestInstance = nullptr;
+        }
+        
+    }
 
   /**
    * @brief Start initializing the MQTT stub.
@@ -62,17 +74,24 @@ public:
   }
 
 
+
   /**
-   * @brief Simualte incoming message for MQTT STUB!
+   * @brief Simulate incoming message for MQTT STUB!
    */
   void simulateIncomingMessage(const std::string &topic,
                                const std::string &data) {
-    if (myConnected && myDataCallback != nullptr) {
-      std::printf("[MQTT STUB] Simulating incoming message on topic '%s'...\n",
-                  topic.c_str());
+    // Vi kollar efter latestInstance för att skicka till den stubbe som faktiskt har callbacken registrerad!
+    if (latestInstance != nullptr && latestInstance->myDataCallback != nullptr) {
+      std::printf("[MQTT STUB] Simulating incoming message on topic '%s'...\n", topic.c_str());
+      latestInstance->myDataCallback(topic, data);
+    } 
+    // Fallback on latestInstance 
+    else if (myDataCallback != nullptr) {
+      std::printf("[MQTT STUB] Simulating incoming message on topic '%s'...\n", topic.c_str());
       myDataCallback(topic, data);
-    } else {
-      std::printf("[MQTT STUB] Cannot simulate message (disconnected).\n");
+    } 
+    else {
+      std::printf("[MQTT STUB] Cannot simulate message (No callback registered yet).\n");
     }
   }
 

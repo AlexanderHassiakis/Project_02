@@ -39,7 +39,7 @@ public:
      *
      * @param period_ms Period in milliseconds.
      */
-    void setPeriod(std::uint64_t period_ms) noexcept override 
+    void setPeriod(std::uint32_t period_ms) noexcept override 
     {
         period_ms_ = period_ms;
     }
@@ -82,7 +82,7 @@ public:
 
 private:
     bool isRunning_;
-    std::uint64_t period_ms_;
+    std::uint32_t period_ms_;
     bool hasExpired_;
     bool isInitialized_;
 };
