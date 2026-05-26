@@ -80,8 +80,8 @@ strlcpy(reinterpret_cast<char *>(wifi_config.sta.password), "DITT_LÖSENORD", ..
 
 * Ändra till stub koden i main.
 
-* För att söka på filer i windows 
+* Öppna windows filer i wsl 
     * cd /mnt/"Skriv sökvägen"
 
-* Kör kod för wsl, kopiera och lägg i terminalen.
+* Körkod för wsl, kopiera och lägg i terminalen.
     * g++ -std=c++20 main/source/main.cpp -I main/include -o logic_test && ./logic_test
