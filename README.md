@@ -1,9 +1,8 @@
-# EXEMPEL README STRUKTUR: Vi fyller på med info :D
-
 
 # P02+ – IoT-extension av driverbiblioteket
 
-En utökning av ett inbäddat drivrutinsbibliotek för ESP32-S3 skriven i C++, med fokus på objektorienterad arkitektur, nätverkskommunikation via MQTT, samt hårdvaruoberoende testning med hjälp av stubs.
+Projektet är en utökning av ett inbäddat drivrutinsbibliotek för ESP32-S3 skrivet i C++ med fokus på en objektorienterad arkitektur. Systemet läser av hårdvarusensorer, hanterar trådsäker exekvering, kommunicerar via MQTT, erbjuder en lokal kommandotolk via USB-Serial/JTAG samt möjliggör hårdvaruoberoende testning med hjälp av stubbar.
+
 
 ## 👥 Gruppmedlemmar
 * **Alexander Hassiakis** 
@@ -25,11 +24,21 @@ Detta projekt bygger vidare på arkitekturen från P02. Systemet är strikt lage
 * **Tunn Main:** `main.cpp` innehåller ingen applikationslogik, utan initierar bara fabriken och startar `Logic::run()`.
 
 
+## 🛠️ Hårvaru uppkoppling / Portar 
+* USB - kommuntiation med USB-Serial/JTAG
+* Port A1 - ADC for temprature read.
+* Port A3 - LED 
+
+
 ## 🛠️ Hur man bygger och kör projektet
 
 ### Förutsättningar
+
 * ESP-IDF installerat (v5.x rekommenderas).
 * En MQTT-klient (t.ex. **MQTT Explorer**) för att skicka kommandon och se temperaturdata.
+* WSL installerat för att köra stubar utan hårdvara.
+* ESP32-S3 enhet.
+* breadboard med komponenter.
 
 ### Konfiguration
 Innan du bygger, öppna `source/driver/mqtt/esp32s3.cpp` och ändra dina Wi-Fi-uppgifter:

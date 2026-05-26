@@ -24,7 +24,7 @@ extern "C" void app_main() {
 }
 
 //-------------------------------------------------------------------------------------------------------------------
-// STUB CODE WSL
+// STUB CODE WSL no hardware needed
 // #include <chrono>
 // #include <iostream>
 // #include <memory>
