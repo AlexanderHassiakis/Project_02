@@ -49,7 +49,7 @@ Systemet tillhandahåller två fullständiga uppsättningar av drivrutinslagret:
 
 ## 🛠️ Hårvaru uppkoppling / Portar
 * USB - kommuntiation med USB-Serial/JTAG
-* Port A1 - ADC for temprature read.
+* Port A1 - ADC för temperatur läsning.
 * Port A3 - LED positiv anslutning.
 
 ### Konfiguration

@@ -3,40 +3,47 @@
 #include <cstdint>
 #include <cstdio>
 
-
 #include "driver/tempsensor/interface.h"
 
-namespace driver::tempsensor {
-class Stub final : public Interface {
+namespace driver::tempsensor
+{
+    class Stub final : public Interface
+    {
 
-public:
-   Stub()
-   {
-      init = false;
-   }
-   ~Stub() = default;
+    public:
+        /**
+         * @brief Construct a new Stub object
+         *
+         */
+        Stub() { init = false; }
 
-   int readTemperature() noexcept override
-   {
-	return tempRead;
-   std::printf("STUB,%i",tempRead);
-   }
+        /**
+         * @brief Destroy the Stub object
+         *
+         */
+        ~Stub() = default;
 
-   void initTemp() noexcept override
-   {
-      init =  true;
-   }
+        /**
+         * @brief Reads temperature.
+         *
+         * @return int
+         */
+        int readTemperature() noexcept override
+        {
+            return tempRead;
+            std::printf("STUB,%i", tempRead);
+        }
 
-   void setTemp(float temp) noexcept
-   {
-	   tempRead = temp;
+        /**
+         * @brief Initilize the tempread
+         *
+         */
+        void initTemp() noexcept override { init = true; }
 
-   }
+        void setTemp(float temp) noexcept { tempRead = temp; }
 
- private:
-   int tempRead{250};
-   bool init;
-
-
-};
+    private:
+        int tempRead{250};
+        bool init;
+    };
 } // namespace driver::tempsensor

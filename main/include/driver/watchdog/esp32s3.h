@@ -4,19 +4,34 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
-namespace driver::watchdog {
-class Esp32s3 : public Interface{
-public:
-	Esp32s3() noexcept = default;
-	~Esp32s3()  noexcept override = default;
+namespace driver::watchdog
+{
+	class Esp32s3 : public Interface
+	{
+	public:
+		/**
+		 * @brief Construct a new Esp 3 2s 3 object
+		 * 
+		 */
+		Esp32s3() noexcept = default;
 
-	void reset() noexcept override
-	{	
-		vTaskDelay(pdMS_TO_TICKS(sleepTime_ms)); // Delay for loopen.
-	}
+		/**
+		 * @brief Destroy the Esp 3 2s 3 object
+		 * 
+		 */
+		~Esp32s3() noexcept override = default;
 
-private:
-    /** Sleep time to reset the watchdog (we need to enter sleep mode for the RTOS to reset it). */
-    static constexpr std::uint8_t sleepTime_ms{10U}; 
-};
+		/**
+		 * @brief Thread sleep to avoid esp watchdog reset.
+		 *
+		 */
+		void reset() noexcept override
+		{
+			vTaskDelay(pdMS_TO_TICKS(sleepTime_ms)); // Delay for loopen.
+		}
+
+	private:
+		/** Sleep time to reset the watchdog (we need to enter sleep mode for the RTOS to reset it). */
+		static constexpr std::uint8_t sleepTime_ms{10U};
+	};
 } // namespace driver::watchdog

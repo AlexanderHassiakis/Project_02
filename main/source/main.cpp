@@ -5,22 +5,24 @@
 #include "system/logic/logic.h"
 
 // extern "C" void app_main() Används för ESP IDF .
-extern "C" void app_main() {
-  // Vi använder 'static' för att säkerställa att factoryn lever kvar i
-  static driver::factory::Esp32s3 esp_factory;
+extern "C" void app_main()
+{
+    // Vi använder 'static' för att säkerställa att factoryn lever kvar i
+    static driver::factory::Esp32s3 esp_factory;
 
-  // Skapa applikationslogiken
-  app::logic::Logic myApp(esp_factory);
+    // Skapa applikationslogiken
+    app::logic::Logic myApp(esp_factory);
 
-  // Om din Logic::run() redan har en while(true)-loop:
-  myApp.run();
+    // Om din Logic::run() redan har en while(true)-loop:
+    myApp.run();
 
-  // Om run() mot förmodan skulle returnera, sätt en delay här för att hindra
-  // krasch
-  while (true) {
-    vTaskDelay(pdMS_TO_TICKS(1000)); // förhindar att system startar om.
-    ESP_LOGI("ERROR", "LOGIC RUN HAS CRASHED!");
-  }
+    // Om run() mot förmodan skulle returnera, sätt en delay här för att hindra
+    // krasch
+    while (true)
+    {
+        vTaskDelay(pdMS_TO_TICKS(1000)); // förhindar att system startar om.
+        ESP_LOGI("ERROR", "LOGIC RUN HAS CRASHED!");
+    }
 }
 
 //-------------------------------------------------------------------------------------------------------------------
