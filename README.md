@@ -78,10 +78,10 @@ strlcpy(reinterpret_cast<char *>(wifi_config.sta.password), "DITT_LÖSENORD", ..
 
 ## Guide att köra koden i WSL
 
-* 1. Ändra till stub koden i main.
+* Ändra till stub koden i main.
 
-* 2. För att söka på filer i windows 
+* För att söka på filer i windows 
     * cd /mnt/"Skriv sökvägen"
 
-* 3. Kör kod för wsl, kopiera och lägg i terminalen.
+* Kör kod för wsl, kopiera och lägg i terminalen.
     * g++ -std=c++20 main/source/main.cpp -I main/include -o logic_test && ./logic_test
