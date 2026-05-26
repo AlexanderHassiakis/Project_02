@@ -14,21 +14,28 @@ Projektet är en utökning av ett inbäddat drivrutinsbibliotek för ESP32-S3 sk
 
 ## 🏗️ Arkitektur & Designprinciper
 
-Detta projekt bygger vidare på arkitekturen från P02. Systemet är strikt lageruppdelat för att uppnå **hårdvaruoberoende**:
+Projektet tillämpar en **skiktad arkitektur (Layered Architecture)** och strikt **lös koppling (Loose Coupling)**. Genom att separera applikationslogiken från hårdvaran uppnås totalt **hårdvaruoberoende**, vilket gör systemet extremt modulärt, testbart och portabelt.
 
-* **Interfaces (Abstraktion):** Systemlogiken kommunicerar *endast* med abstrakta gränssnitt (t.ex. `driver::mqtt::Interface`). Logiken har ingen aning om ifall den körs på ett riktigt chip eller en simulator.
-* **Factory Pattern:** En central fabrik (`Factory`) ansvarar för att skapa och leverera rätt drivrutiner till systemlogiken.
-* **Drivers & Stubs:** Vi har implementerat dubbla uppsättningar av drivrutiner:
-  1. `Esp32s3`: Verkliga drivrutiner som använder ESP-IDF:s nätverks- och hårdvarustack.
-  2. `Stub`: Simulerade drivrutiner för lokal testning på datorn utan hårdvara.
-* **Tunn Main:** `main.cpp` innehåller ingen applikationslogik, utan initierar bara fabriken och startar `Logic::run()`.
+Följande designmönster och principer har varit styrande i arkitekturen:
 
+### 1. Dependency Inversion Principle (DIP) via Gränssnitt
+Applikationslagret (`app::logic::Logic`) kommunicerar *aldrig* direkt med den underliggande hårdvaran eller specifika drivrutiner. Istället sker all interaktion via abstrakta gränssnitt (t.ex. `driver::mqtt::Interface` och `driver::adc::Interface`). 
+* **Fördel:** Logiken är helt ovetande om ifall den körs på ett fysiskt mikrorundkort eller i en simulator, vilket eliminerar dolda beroenden.
 
-## 🛠️ Hårvaru uppkoppling / Portar
-* USB - kommuntiation med USB-Serial/JTAG
-* Port A1 - ADC for temprature read.
-* Port A3 - LED positiv anslutning.
+### 2. Factory Pattern (Fabriksmönster)
+För att kapsla in skapandet av drivrutiner används en central fabrik (`Factory`). Fabriken fungerar som systemets sammanfogande länk (Dependency Injection) och ansvarar för att leverera rätt implementationer till logiken baserat på vilken miljö applikationen kompileras för:
+* `driver::factory::Esp32s3`: Instansierar de skarpa drivrutinerna för produktion.
+* `driver::factory::Stub`: Instansierar de simulerade drivrutinerna för testning.
 
+### 3. Separation of Concerns (Drivers vs. Stubs)
+Systemet tillhandahåller två fullständiga uppsättningar av drivrutinslagret:
+1. **Produktionsskiktet (`Esp32s3`):** Realiserar gränssnitten mot det fysiska chippet och dess hårdvarustackar via ESP-IDF (t.ex. Wi-Fi, FreeRTOS-trådar, hårdvaru-ADC och UART).
+2. **Simuleringsskiktet (`Stub`):** Realiserar samma gränssnitt men i ren mjukvara. Genom smarta implementationer (såsom statiska instans-bakdörrar i MQTT-stubben) kan terminalen på en vanlig dator simulera nätverks- och sensorhändelser i realtid.
+
+### 4. Ren Design med "Tunn Main"
+`main.cpp` fungerar uteslutande som applikationens startpunkt (Entry Point). Den innehåller ingen affärslogik, utan dess enda ansvar är att initiera fabriken, konfigurera minnesallokeringen för systemlogiken och starta exekveringstråden (`Logic::run()`). Detta håller startsekvensen ren och lätt att felsöka.
+
+---
 
 ## 🛠️ Hur man bygger och kör projektet
 
@@ -39,6 +46,11 @@ Detta projekt bygger vidare på arkitekturen från P02. Systemet är strikt lage
 * WSL installerat för att köra stubar utan hårdvara.
 * ESP32-S3 enhet.
 * breadboard med komponenter.
+
+## 🛠️ Hårvaru uppkoppling / Portar
+* USB - kommuntiation med USB-Serial/JTAG
+* Port A1 - ADC for temprature read.
+* Port A3 - LED positiv anslutning.
 
 ### Konfiguration
 Innan du bygger, öppna `source/driver/mqtt/esp32s3.cpp` och ändra dina Wi-Fi-uppgifter:
