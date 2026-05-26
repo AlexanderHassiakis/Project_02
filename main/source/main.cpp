@@ -22,35 +22,9 @@
 // }
 
 
-//STUB TEST CODE 
-// Ta bort alla ESP log innan man kör.
-//Test WSL CODE : g++ -std=c++20 main/source/main.cpp -I main/include -o logic_test && ./logic_test
-// #include <iostream>
-// #include <memory>
-// #include <chrono>
 
-// #include "driver/factory/stub.h"
-// #include "system/logic/logic.h"
-
-// int main()  {
-//   std::cout << "--- Startar Stub-version i WSL ---" << std::endl;
-
-//   // Vi använder static för att säkerställa att factoryn lever kvar i minnet
-//   static driver::factory::Stub esp_factory;
-
-//   // Skapa applikationslogiken
-//   app::logic::Logic myApp(esp_factory);
-
-//   // Kör logiken
-//   myApp.run();
-
-//   while (true) {
-//     // En liten paus för att inte grilla din PC-processor
-//     // På PC kan vi använda std::this_thread::sleep_for om vi vill
-//     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-//   }
-// }
-
+//-------------------------------------------------------------------------------------------------------------------
+// STUB CODE WSL
 #include <chrono>
 #include <iostream>
 #include <memory>
@@ -58,7 +32,7 @@
 #include <thread>
 
 #include "driver/factory/stub.h"
-#include "driver/mqtt/stub.h" // Inkludera stubben direkt
+#include "driver/mqtt/stub.h" 
 #include "system/logic/logic.h"
 
 
@@ -74,16 +48,15 @@ int main() {
   // nullptr!
   static driver::mqtt::Stub lokalMqttStub;
 
-  // 2. Skapa fabriken och applikationslogiken
+  // Skapa fabriken och applikationslogiken
   static driver::factory::Stub esp_factory;
   static app::logic::Logic myApp(esp_factory);
 
-  // 3. Starta bakgrundstråden.
-  // ÄNDRING: Vi lämnar [] tom och fångar ingenting, vilket tar bort
+  // Starta bakgrundstråden.
   // kompilatorvarningen!
   std::thread appThread([]() { myApp.run(); });
 
-  // 4. Huvudloop för terminalinmatning
+  // Huvudloop för terminalinmatning
   std::string inputLine;
   while (std::getline(std::cin, inputLine)) {
 
@@ -101,7 +74,6 @@ int main() {
       driver::mqtt::Stub::latestInstance->simulateIncomingMessage(
           "wsl/terminal", inputLine);
     } else {
-      // Om detta mot förmodan skulle hända, använder vi vår direkta instans som
       // fallback
       lokalMqttStub.simulateIncomingMessage("wsl/terminal", inputLine);
     }
