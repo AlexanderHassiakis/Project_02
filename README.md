@@ -72,7 +72,7 @@ strlcpy(reinterpret_cast<char *>(wifi_config.sta.password), "DITT_LÖSENORD", ..
 * idf.py build
 
 ## 3. Flashat till ESP32-S3 och starta serieövervakaren
-* idf.py flash 'Val of PORT ex: COM9' monitor
+* idf.py -p "PORT" flash monitor : 'Val of PORT ex: COM9' 
 
 ---
 
