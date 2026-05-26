@@ -29,9 +29,12 @@ class Tmp36 final : public Interface {
        */
       int readTemperature() noexcept override;
 
+      void initTemp() noexcept override;
+
     private:
       driver::adc::Interface& refBorrowAdc;
       uint8_t channelAdc;
+      bool init;
     };
 
 } // namespace driver::tempsensor

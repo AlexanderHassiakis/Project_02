@@ -27,7 +27,7 @@ Detta projekt bygger vidare på arkitekturen från P02. Systemet är strikt lage
 ## 🛠️ Hårvaru uppkoppling / Portar
 * USB - kommuntiation med USB-Serial/JTAG
 * Port A1 - ADC for temprature read.
-* Port A3 - LED 
+* Port A3 - LED positiv anslutning.
 
 
 ## 🛠️ Hur man bygger och kör projektet

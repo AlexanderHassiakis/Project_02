@@ -12,7 +12,7 @@
 namespace driver::tempsensor {
 
     Tmp36::Tmp36(driver::adc::Interface& adc, uint8_t channel) noexcept 
-        :refBorrowAdc(adc), channelAdc(channel)
+        :refBorrowAdc(adc), channelAdc(channel), init{false}
     {
       ESP_LOGI("TMP36", "ADC-resurces created.");
     }
@@ -37,5 +37,12 @@ namespace driver::tempsensor {
     // Return only whole numbers.
     return (voltage_mv - 500);
     }
+
+    void
+    Tmp36::initTemp() noexcept 
+    {
+      init = true; 
+    }
+    
 
 } // namespace driver::tempsensor

@@ -10,7 +10,10 @@ namespace driver::tempsensor {
 class Stub final : public Interface {
 
 public:
-   Stub()= default;
+   Stub()
+   {
+      init = false;
+   }
    ~Stub() = default;
 
    int readTemperature() noexcept override
@@ -19,16 +22,20 @@ public:
    std::printf("STUB,%i",tempRead);
    }
 
+   void initTemp() noexcept override
+   {
+      init =  true;
+   }
+
    void setTemp(float temp) noexcept
    {
 	   tempRead = temp;
 
    }
 
-
-private:
-
-int tempRead{250};
+ private:
+   int tempRead{250};
+   bool init;
 
 
 };
