@@ -24,7 +24,7 @@ Detta projekt bygger vidare på arkitekturen från P02. Systemet är strikt lage
 * **Tunn Main:** `main.cpp` innehåller ingen applikationslogik, utan initierar bara fabriken och startar `Logic::run()`.
 
 
-## 🛠️ Hårvaru uppkoppling / Portar 
+## 🛠️ Hårvaru uppkoppling / Portar
 * USB - kommuntiation med USB-Serial/JTAG
 * Port A1 - ADC for temprature read.
 * Port A3 - LED 
@@ -74,4 +74,14 @@ strlcpy(reinterpret_cast<char *>(wifi_config.sta.password), "DITT_LÖSENORD", ..
 ## 3. Flashat till ESP32-S3 och starta serieövervakaren
 * idf.py flash 'Val of PORT ex: COM9' monitor
 
+---
 
+## Guide att köra koden i WSL
+
+## 1. Ändra till stub koden i main.
+
+## 2. För att söka på filer i windows 
+* cd /mnt/"Skriv sökvägen"
+
+## 3. Kör kod för wsl, kopiera och lägg i terminalen.
+* g++ -std=c++20 main/source/main.cpp -I main/include -o logic_test && ./logic_test
