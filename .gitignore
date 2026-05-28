@@ -1,13 +1,3 @@
-#Specficy remove this files
-sdkconfig
-sdkconfig.old
-idf_component.yml
-build/
-Debug/
-.vscode/
-.vs/
-managed_components/
-dependencies.lock
 
 # Ignore everything without an extension.
 *
@@ -55,6 +45,8 @@ dependencies.lock
 #Ignore Vscode files
 *.vscode
 
-#Ignore MQTT Drivers
+# Ignore ESP32 files.
 *.managed_components/
+*dependencies.lock
+*idf_component.yml
 
