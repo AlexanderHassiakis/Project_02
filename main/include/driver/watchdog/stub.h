@@ -32,6 +32,12 @@ namespace driver::watchdog
 			std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		}
 
+		/**Esp32s3 construct Forbidden moves/copy. **/
+		Stub(const Stub &) = delete;
+		Stub(Stub &&) = delete;
+		Stub &operator=(const Stub &) = delete;
+		Stub &operator=(Stub &&) = delete;
+
 	private:
 	};
 } // namespace driver::watchdog

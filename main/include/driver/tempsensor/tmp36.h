@@ -33,6 +33,12 @@ namespace driver::tempsensor
          */
         void initTemp() noexcept override;
 
+        /**Tmp36 construct Forbidden moves/copy. **/
+        Tmp36(const Tmp36 &) = delete;            // No copy constructor.
+        Tmp36(Tmp36 &&) = delete;                 // No move constructor.
+        Tmp36 &operator=(const Tmp36 &) = delete; // No copy assignment.
+        Tmp36 &operator=(Tmp36 &&) = delete;      // No move assignment.
+
     private:
         driver::adc::Interface &refBorrowAdc;
         uint8_t channelAdc;

@@ -56,6 +56,12 @@ public:
      */
     float readVoltage(std::uint8_t pin) noexcept override;
 
+    /**Esp32s3 construct Forbidden moves/copy. **/
+    Esp32s3(const Esp32s3 &) = delete;
+    Esp32s3(Esp32s3 &&) = delete;
+    Esp32s3 &operator=(const Esp32s3 &) = delete;
+    Esp32s3 &operator=(Esp32s3 &&) = delete;
+
 private:
     /** Indicates if initialization succeeded. */
     bool myInitialized;

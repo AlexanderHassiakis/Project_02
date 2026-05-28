@@ -50,3 +50,6 @@
 *dependencies.lock
 *idf_component.yml
 
+# Ingore todo lists
+*assigned_todo.md
+*Funktionertilldelade

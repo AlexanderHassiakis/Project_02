@@ -42,7 +42,13 @@ public:
 	 * @brief Toggle GPIO state.
 	 */
 	void toggle() noexcept { myState = !myState; }
-		 
+
+	/**Esp32s3 construct Forbidden moves/copy. **/
+	Stub(const Stub &) = delete;
+	Stub(Stub &&) = delete;
+	Stub &operator=(const Stub &) = delete;
+	Stub &operator=(Stub &&) = delete;
+
 private:
 	/** GPIO state (true = high, false = low). */
 	bool myState;
