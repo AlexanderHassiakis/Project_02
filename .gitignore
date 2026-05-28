@@ -1,6 +1,7 @@
 #Specficy remove this files
 sdkconfig
 sdkconfig.old
+idf_component.yml
 build/
 Debug/
 .vscode/

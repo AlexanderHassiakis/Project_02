@@ -50,7 +50,7 @@ Systemet tillhandahåller två fullständiga uppsättningar av drivrutinslagret:
 ## 🛠️ Hårvaru uppkoppling / Portar
 * USB - kommuntiation med USB-Serial/JTAG
 * Port A1 - ADC för temperatur läsning.
-* Port A3 - LED positiv anslutning.
+* Port A3 - LED positiv anslutning(matning).
 
 ### Konfiguration
 Innan du bygger, öppna `source/driver/mqtt/esp32s3.cpp` och ändra dina Wi-Fi-uppgifter:
@@ -80,6 +80,7 @@ strlcpy(reinterpret_cast<char *>(wifi_config.sta.password), "DITT_LÖSENORD", ..
 
 ## 2. Bygg koden
 * idf.py fullclean
+* idf.py add-dependency "espressif/mqtt"
 * idf.py reconfigure
 * idf.py build
 
