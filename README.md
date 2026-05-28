@@ -97,4 +97,4 @@ strlcpy(reinterpret_cast<char *>(wifi_config.sta.password), "DITT_LÖSENORD", ..
     * cd /mnt/"Skriv sökvägen"
 
 * Körkod för wsl, kopiera och lägg i terminalen.
-    * g++ -std=c++20 main/source/main.cpp -I main/include -o logic_test && ./logic_test
+    * g++ -std=c++20 main/source/main.cpp -D STUB -I main/include -o logic_test && ./logic_test
