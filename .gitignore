@@ -46,7 +46,7 @@
 *.vscode
 
 # Ignore ESP32 files.
-*.managed_components/
+*managed_components/
 *dependencies.lock
 *idf_component.yml
 
