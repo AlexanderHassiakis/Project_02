@@ -1,9 +1,11 @@
+//! @note File header missing.
 #pragma once
 
 #include <cstdint>
 
 namespace driver::timer
 {
+//! @note Class header missing.
 class Interface
 {
 public:

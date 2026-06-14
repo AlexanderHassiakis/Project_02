@@ -1,72 +1,83 @@
+/**
+ * @brief Stub factory.
+ */
 #pragma once
 
 #include <cstdint>
+#include <cstdio>
 #include <memory>
-#include "driver/factory/interface.h"
+
 #include "driver/adc/stub.h"
+#include "driver/factory/interface.h"
 #include "driver/gpio/stub.h"
+#include "driver/mqtt/stub.h"
 #include "driver/serial/stub.h"
 #include "driver/tempsensor/stub.h"
 #include "driver/timer/stub.h"
 #include "driver/watchdog/stub.h"
-#include "driver/mqtt/stub.h"
 
 namespace driver::factory
 {
-	class Stub final : public Interface
+/**
+ * @brief Stub factory.
+ * 
+ *        This class should be non-copyable and non-movable.
+ */
+class Stub final : public Interface
+{
+public:
+    //! @note Doxygen comments missing!
+	Stub() noexcept
 	{
-	public:
-		
-		Stub() noexcept
-		{
-			std::printf("Constructor done!\n");
-		}
+		std::printf("Constructor done!\n");
+	}
 
-		~Stub() noexcept override
-		{
-			std::printf("Destruktor finished!\n");
-		}
+	~Stub() noexcept override
+	{
+		std::printf("Destructor finished!\n");
+	}
 
-		std::unique_ptr<adc::Interface> adc(std::uint8_t pin) noexcept override
-		{
-			(void)(pin);
-			return std::make_unique<adc::Stub>();
-		}
+	std::unique_ptr<adc::Interface> adc(std::uint8_t pin) noexcept override
+	{
+		(void)(pin);
+		return std::make_unique<adc::Stub>();
+	}
 
-		std::unique_ptr<gpio::Interface> gpio(std::uint8_t pin) noexcept override
-		{
-			(void)(pin); 
-			return std::make_unique<gpio::Stub>();
-		}
+	std::unique_ptr<gpio::Interface> gpio(std::uint8_t pin) noexcept override
+	{
+		(void)(pin); 
+		return std::make_unique<gpio::Stub>();
+	}
 
-		std::unique_ptr<serial::Interface> serial() noexcept override
-		{
-			return std::make_unique<serial::Stub>();
-		}
+	std::unique_ptr<serial::Interface> serial() noexcept override
+	{
+		return std::make_unique<serial::Stub>();
+	}
 
-		std::unique_ptr<timer::Interface> timer() noexcept override
-		{
-			return std::make_unique<timer::Stub>();
-		}
+	std::unique_ptr<timer::Interface> timer() noexcept override
+	{
+		return std::make_unique<timer::Stub>();
+	}
 
-		std::unique_ptr<tempsensor::Interface> tempSensor(std::uint8_t pin, adc::Interface& adcRef) noexcept override
-		{
-			// Not used in this implementation, ignore.
-			(void) (pin);
-			(void) (adcRef);
+	std::unique_ptr<tempsensor::Interface> tempSensor(std::uint8_t pin, adc::Interface& adcRef) noexcept override
+	{
+		// Not used in this implementation, ignore.
+		(void) (pin);
+		(void) (adcRef);
 
-			return std::make_unique<tempsensor::Stub>();
-		}
+		return std::make_unique<tempsensor::Stub>();
+	}
 
-        std::unique_ptr<watchdog::Interface> watchdog() noexcept override
-		{
-			return std::make_unique<watchdog::Stub>();
-		}
+	std::unique_ptr<watchdog::Interface> watchdog() noexcept override
+	{
+		return std::make_unique<watchdog::Stub>();
+	}
 
-		 std::unique_ptr<mqtt::Interface> mqtt() noexcept override
-		{
-			return std::make_unique<mqtt::Stub>();
-		}
-	};
+	std::unique_ptr<mqtt::Interface> mqtt() noexcept override
+	{
+		return std::make_unique<mqtt::Stub>();
+	}
 
-} // namespace include::driver::factory
+	//! @note Please prevent copy and move operations here!
+};
+} // namespace driver::factory

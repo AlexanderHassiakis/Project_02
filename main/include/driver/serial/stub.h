@@ -2,9 +2,8 @@
 
 #include <cstdint>
 #include <cstdio>
-#include <iostream>
-#include <string>
-#include <cstring> 
+//! @note Removed unused <iostream>, <string>, and <cstring>.
+#include <cstring>
 #include "driver/serial/interface.h"
 
 namespace driver::serial
@@ -59,9 +58,10 @@ public:
 		{	//Check if there is a connection.
 			if (!myConnectionStatus){return;}
 			//Check that the file is not to large. if to large send only the bufsize to prevent crash.
-			std::uint16_t copyLen = (bufLen < BufSize) ? bufLen : BufSize;
+			//! @note Changed = to {} init; size_t → std::size_t.
+			const std::uint16_t copyLen{(bufLen < BufSize) ? bufLen : BufSize};
 
-			for (size_t i = 0; i < copyLen; i++)
+			for (std::size_t i{0U}; i < copyLen; ++i)
 			{
 				myDataMsg[i] = buf[i];
 			}
@@ -119,11 +119,11 @@ public:
 
         private:
           /** Buffer size. */
-          static constexpr std::uint16_t BufSize{200U}; // Array size.
-          std::uint8_t myDataMsg[BufSize]{0U};          // Data array
-          const char *myMsg;
-
-          bool myDataAvailable;    // Status if there is a command.
-          bool myConnectionStatus; // status off the UART connection
+          static constexpr std::uint16_t BufSize{200U};
+          //! @note Added {} initialization; removed obvious inline comments.
+          std::uint8_t myDataMsg[BufSize]{};
+          const char *myMsg{nullptr};
+          bool myDataAvailable{false};
+          bool myConnectionStatus{false};
         };
-} // namespace driver::serial::serial
+} // namespace driver::serial

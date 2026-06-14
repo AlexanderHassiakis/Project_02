@@ -6,6 +6,8 @@
 #include "freertos/task.h"
 #include "system/logic/logic.h"
 
+//! @note Comments should be written in English, but OK.
+
 // extern "C" void app_main() Används för ESP IDF .
 extern "C" void app_main()
 {
@@ -39,55 +41,56 @@ extern "C" void app_main()
 #include "driver/mqtt/stub.h"
 #include "system/logic/logic.h"
 
-int main() {
-  std::cout << "--- Startar Stub-version i WSL ---" << std::endl;
-  std::cout << "Skriv kommandon (on, off, blink, status, temp) och tryck
-  Enter:"
+int main()
+{
+    std::cout << "--- Startar Stub-version i WSL ---" << std::endl;
+    std::cout << "Skriv kommandon (on, off, blink, status, temp) och tryck
+    Enter:"
             << std::endl;
-  std::cout << "--------------------------------------------------------"
+    std::cout << "--------------------------------------------------------"
             << std::endl;
 
-  // 1. Skapa en fast, global instans av MQTT-stubben direkt i main-scopes
-  // minne. Detta garanterar att latestInstance sätts DIREKT här och aldrig
-  blir
-  // nullptr!
-  static driver::mqtt::Stub lokalMqttStub;
+    //! @note Please initialize all variables below with {}.
 
-  // Skapa fabriken och applikationslogiken
-  static driver::factory::Stub esp_factory;
-  static app::logic::Logic myApp(esp_factory);
+    // 1. Skapa en fast, global instans av MQTT-stubben direkt i main-scopes
+    // minne. Detta garanterar att latestInstance sätts DIREKT här och aldrig blir nullptr!
+    static driver::mqtt::Stub lokalMqttStub;
 
-  // Starta bakgrundstråden.
-  // kompilatorvarningen!
-  std::thread appThread([]() { myApp.run(); });
+    // Skapa fabriken och applikationslogiken
+    static driver::factory::Stub esp_factory;
+    static app::logic::Logic myApp(esp_factory);
 
-  // Huvudloop för terminalinmatning
-  std::string inputLine;
-  while (std::getline(std::cin, inputLine)) {
+    // Starta bakgrundstråden.
+    // kompilatorvarningen!
+    std::thread appThread([]() { myApp.run(); });
 
-    if (inputLine.empty()) {
-      continue;
+    // Huvudloop för terminalinmatning
+    //! @note Initialize explicitly with {} (this is done in the std::string constructor for this type,
+    //! so OK).
+    std::string inputLine;
+    while (std::getline(std::cin, inputLine)) 
+    {
+        if (inputLine.empty()) { continue; }
+
+        if (inputLine == "exit" || inputLine == "quit") 
+        {
+            std::cout << "Avslutar WSL-simulering..." << std::endl;
+            break;
+        }
+
+        // Vi använder vår garanterade lokala instans istället för att leta i
+        minnet if (driver::mqtt::Stub::latestInstance != nullptr) 
+        {
+            driver::mqtt::Stub::latestInstance->simulateIncomingMessage("wsl/terminal", inputLine);
+        } 
+        else 
+        {
+            // fallback
+            lokalMqttStub.simulateIncomingMessage("wsl/terminal", inputLine);
+        }
     }
 
-    if (inputLine == "exit" || inputLine == "quit") {
-      std::cout << "Avslutar WSL-simulering..." << std::endl;
-      break;
-    }
-
-    // Vi använder vår garanterade lokala instans istället för att leta i
-    minnet if (driver::mqtt::Stub::latestInstance != nullptr) {
-      driver::mqtt::Stub::latestInstance->simulateIncomingMessage(
-          "wsl/terminal", inputLine);
-    } else {
-      // fallback
-      lokalMqttStub.simulateIncomingMessage("wsl/terminal", inputLine);
-    }z
-  }
-
-  if (appThread.joinable()) {
-    appThread.detach();
-  }
-
-  return 0;
+    if (appThread.joinable()) { appThread.detach(); }
+    return 0;
 }
 #endif // STUB
