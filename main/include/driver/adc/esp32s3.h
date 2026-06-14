@@ -1,5 +1,4 @@
 /**
- * @file esp32s3.h
  * @brief ESP32-S3 ADC driver declaration.
  */
 
@@ -15,13 +14,14 @@ namespace driver::adc
 /**
  * @brief ADC driver for ESP32-S3 using oneshot mode.
  *
- * Provides functions to read raw ADC values and convert them to voltage.
+ *        This class is non-copyable and non-movable.
  */
-class Esp32s3 : public Interface
+//! @note Added final.
+class Esp32s3 final : public Interface
 {
 public:
     /**
-     * @brief Constructs and initializes the ADC driver.
+     * @brief Constructor.
      */
     Esp32s3() noexcept;
 
@@ -33,7 +33,7 @@ public:
     /**
      * @brief Check if the ADC was initialized successfully.
      *
-     * @return true if initialized, otherwise false.
+     * @return True if initialized, otherwise false.
      */
     bool isInitialized() const noexcept override;
 
@@ -41,6 +41,7 @@ public:
      * @brief Read raw ADC value from a pin.
      *
      * @param pin ADC pin/channel.
+     * 
      * @return Raw value (0–4095 for 12-bit ADC).
      */
     std::uint16_t readRaw(std::uint8_t pin) noexcept override;
@@ -48,23 +49,21 @@ public:
     /**
      * @brief Read voltage from a pin.
      *
-     * Converts the raw ADC value to voltage based on ADC range
-     * and supply voltage.
+     *        Converts the raw ADC value to voltage based on ADC range and supply voltage.
      *
      * @param pin ADC pin/channel.
+     * 
      * @return Voltage in volts.
      */
     float readVoltage(std::uint8_t pin) noexcept override;
 
-    /**Esp32s3 construct Forbidden moves/copy. **/
-    Esp32s3(const Esp32s3 &) = delete;
-    Esp32s3(Esp32s3 &&) = delete;
-    Esp32s3 &operator=(const Esp32s3 &) = delete;
-    Esp32s3 &operator=(Esp32s3 &&) = delete;
+    Esp32s3(const Esp32s3& )            = delete; // No copy constructor.
+    Esp32s3(Esp32s3&&)                  = delete; // No move constructor.
+    Esp32s3& operator=(const Esp32s3& ) = delete; // No copy assignment.
+    Esp32s3& operator=(Esp32s3&&)       = delete; // No move assignment.
 
 private:
-    /** Indicates if initialization succeeded. */
+    /** True if initialization succeeded, false otherwise. */
     bool myInitialized;
 };
-
 } // namespace driver::adc

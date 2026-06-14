@@ -1,8 +1,6 @@
 /**
- * @file interface.h
- * @brief Common ADC driver interface.
+ * @brief ADC driver interface.
  */
-
 #pragma once
 
 #include <cstdint>
@@ -10,7 +8,7 @@
 namespace driver::adc
 {
 /**
- * @brief Common interface for ADC drivers.
+ * @brief ADC driver interface.
  */
 class Interface 
 {
@@ -31,6 +29,7 @@ public:
      * @brief Read a raw ADC sample from the selected pin.
      *
      * @param pin ADC-capable pin to read from.
+     * 
      * @return Raw ADC value.
      */
     virtual std::uint16_t readRaw(std::uint8_t pin) noexcept = 0;
@@ -39,6 +38,7 @@ public:
      * @brief Read the input voltage on the selected pin.
      *
      * @param pin ADC-capable pin to read from.
+     * 
      * @return Measured voltage in volts.
      */
     virtual float readVoltage(std::uint8_t pin) noexcept = 0;
