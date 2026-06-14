@@ -1,22 +1,20 @@
+//! @note File header missing.
 #pragma once
-
-#include <cstdint>
 
 namespace driver::watchdog
 {
+//! @note Class header missing.
 class Interface
 {
 public:
 	/**
-	 * @brief Destroy the Interface object
-	 * 
+	 * @brief Destructor.
 	 */
-	virtual ~Interface() noexcept  = default;
+	virtual ~Interface() noexcept = default;
+
 	/**
-	 * @brief Watchdog delay.
-	 * 
+	 * @brief Reset the watchdog.
 	 */
 	virtual void reset() noexcept = 0;
-};	
+};
 } // namespace driver::watchdog
-
