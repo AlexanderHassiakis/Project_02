@@ -1,7 +1,5 @@
-
 /**
- * @brief Stub for GPIO
- * 
+ * @brief Stub GPIO driver.
  */
 #pragma once
 
@@ -9,21 +7,27 @@
 
 namespace driver::gpio
 {
+/**
+ * @brief Stub GPIO driver.
+ * 
+ *        This class is non-copyable and non-movable.
+ */
 class Stub final : public Interface
 {
 public:
 	/**
 	 * @brief Destructor.
 	 */
-		~Stub() noexcept = default;
+	~Stub() noexcept = default;
 
 	/**
 	 * @brief Construct a new Stub object
 	 * 
 	 */
-		Stub() noexcept
-			: myState{false}
-		{}
+	//! @note Should be placed above the destructor.
+	Stub() noexcept
+		: myState{false}
+	{}
 
 	/**
 	 * @brief Set GPIO output.
@@ -31,23 +35,25 @@ public:
 	 * @param [in] state GPIO state (true = high, false = low).
 	 */
 	void output(bool state) noexcept override { myState = state; }
+
 	/**
 	 * @brief Read GPIO input.
 	 *
 	 * @return GPIO state (true = high, false = low).
 	 */
-	bool input() const noexcept { return myState; }
+	//! @note Added override.
+	bool input() const noexcept override { return myState; }
 
 	/**
 	 * @brief Toggle GPIO state.
 	 */
-	void toggle() noexcept { myState = !myState; }
+	//! @note Added override.
+	void toggle() noexcept override { myState = !myState; }
 
-	/**Esp32s3 construct Forbidden moves/copy. **/
-	Stub(const Stub &) = delete;
-	Stub(Stub &&) = delete;
-	Stub &operator=(const Stub &) = delete;
-	Stub &operator=(Stub &&) = delete;
+	Stub(const Stub&)            = delete; // No copy constructor.
+	Stub(Stub&&)                 = delete; // No move constructor.
+	Stub& operator=(const Stub&) = delete; // No copy assignment.
+	Stub& operator=(Stub&&)      = delete; // No move assignment.
 
 private:
 	/** GPIO state (true = high, false = low). */

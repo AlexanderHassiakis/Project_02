@@ -1,8 +1,9 @@
-
+//! @note File header missing (I've added it to other files, now I'll just comment).
 #pragma once
 
 #include <cstdint>
 
+//! @note Please place brackets on the next line instead. :)
 namespace driver::gpio {
 class Interface {
 public:
