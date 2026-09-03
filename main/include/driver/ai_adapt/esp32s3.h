@@ -46,7 +46,7 @@ namespace driver::ai_adapt
 		 *
 		 * @return True if training was performed, false if input argument is invalid.
 		 */
-		bool train(std::size_t epochCount, double learningRate = 0.01) noexcept;
+		bool train(std::size_t epochCount, double precisionThreshold = 0.99999) noexcept;
 
 		Fixed() = delete;						  // No default constructor.
 		Fixed(const Fixed &) = delete;			  // No copy constructor.

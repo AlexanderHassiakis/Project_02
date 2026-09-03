@@ -60,9 +60,10 @@ namespace driver::ai_adapt
 	double Fixed::predict(const double input) const noexcept { return myWeight * input + myBias; }
 
 	// -----------------------------------------------------------------------------
-	bool Fixed::train(std::size_t epochCount, double learningRate,
-					  double precisionThreshold) noexcept
+	bool Fixed::train(std::size_t epochCount,double precisionThreshold) noexcept
 	{
+		double prevPrecision = 0.0;
+		double learningRate = 0.1;
 		constexpr std::size_t evaluationInterval{10};
 		// Check epoch count, return false if 0.
 		if (0U == epochCount)
@@ -103,6 +104,20 @@ namespace driver::ai_adapt
 					std::printf("Finished training with precision %g after %zu epochs!\n", precision, epoch);
 					return true;
 				}
+				
+				const auto diffPrecision = precision - prevPrecision;
+				
+				if (diffPrecision < 0)
+				{
+					learningRate = learningRate * 0.9;
+				}
+
+				else if (diffPrecision < 0.1)
+				{
+					learningRate = learningRate * 1.1;
+				}
+				learningRate = std::clamp(learningRate, 0.01, 0.25);
+				prevPrecision = precision;
 			}
 		}
 		return true;
