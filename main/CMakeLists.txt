@@ -8,6 +8,7 @@ idf_component_register(
         "source/driver/tempsensor/tmp36.cpp"
         "source/driver/timer/esp32s3.cpp"
         "source/driver/mqtt/esp32s3.cpp"
+        "source/driver/ai_adapt/esp32s3.cpp"
     INCLUDE_DIRS "include")
     
 

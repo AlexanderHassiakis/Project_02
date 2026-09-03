@@ -3,6 +3,8 @@
  */
 #pragma once
 #include "driver/ai_adapt/interface.h"
+#include "driver/ai_adapt/matrix.h"
+
 namespace driver::ai_adapt
 {
 	/**
@@ -10,7 +12,6 @@ namespace driver::ai_adapt
 	 */
 	class Esp32s3 final : public Interface
 	{
-	public:
 	public:
 		/**
 		 * @brief Constructor.
@@ -22,12 +23,12 @@ namespace driver::ai_adapt
 		 *       must be accessible during the training cycle. The training data must not change
 		 *       during training, else the performance might suffer.
 		 */
-		explicit Fixed(const Matrix1d &trainIn, const Matrix1d &trainOut) noexcept;
+		explicit Esp32s3(const Matrix1d &trainIn, const Matrix1d &trainOut) noexcept;
 
 		/**
 		 * @brief Destructor.
 		 */
-		~Fixed() noexcept override = default;
+		~Esp32s3() noexcept override = default;
 
 		/**
 		 * @brief Predict based on the given input.
@@ -48,11 +49,11 @@ namespace driver::ai_adapt
 		 */
 		bool train(std::size_t epochCount, double precisionThreshold = 0.99999) noexcept;
 
-		Fixed() = delete;						  // No default constructor.
-		Fixed(const Fixed &) = delete;			  // No copy constructor.
-		Fixed(Fixed &&) = delete;				  // No move constructor.
-		Fixed &operator=(const Fixed &) = delete; // No copy assignment.
-		Fixed &operator=(Fixed &&) = delete;	  // No move assignment.
+		Esp32s3() = delete;						  // No default constructor.
+		Esp32s3(const Esp32s3 &) = delete;			  // No copy constructor.
+		Esp32s3(Esp32s3 &&) = delete;				  // No move constructor.
+		Esp32s3 &operator=(const Esp32s3 &) = delete; // No copy assignment.
+		Esp32s3 &operator=(Esp32s3 &&) = delete;	  // No move assignment.
 
 	private:
 		/**

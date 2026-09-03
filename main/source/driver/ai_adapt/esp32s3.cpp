@@ -1,5 +1,5 @@
 /**
- * @file Linear regression model with fixed learning rate.
+ * @file Linear regression model with Esp32s3 learning rate.
  */
 #include <algorithm>
 #include <cstddef>
@@ -10,30 +10,30 @@
 #include <cmath>
 
 #include "driver/ai_adapt/esp32s3.h"
+#include "driver/ai_adapt/interface.h"
+#include "driver/ai_adapt/matrix.h"
 
 
 namespace driver::ai_adapt
 {
-	namespace
+	
+	// -----------------------------------------------------------------------------
+	void initRandom() noexcept
 	{
-		// -----------------------------------------------------------------------------
-		void initRandom() noexcept
+		// Only initialize the random generator once.
+		static bool initialized{false};
+		if (initialized)
 		{
-			// Only initialize the random generator once.
-			static bool initialized{false};
-			if (initialized)
-			{
-				return;
-			}
-
-			// Initialize the random generator with the current timestamp as seed.
-			std::srand(std::time(nullptr));
-			initialized = true;
+			return;
 		}
-	} // namespace
+
+		// Initialize the random generator with the current timestamp as seed.
+		std::srand(std::time(nullptr));
+		initialized = true;
+	}
 
 	// -----------------------------------------------------------------------------
-	Fixed::Fixed(const Matrix1d &trainIn, const Matrix1d &trainOut) noexcept
+	Esp32s3::Esp32s3(const Matrix1d &trainIn, const Matrix1d &trainOut) noexcept
 		: myTrainOrder{}, myTrainIn{trainIn}, myTrainOut{trainOut}, myBias{}, myWeight{}
 	{
 		const auto setCount = std::min(trainIn.size(), trainOut.size());
@@ -57,10 +57,10 @@ namespace driver::ai_adapt
 	}
 
 	// -----------------------------------------------------------------------------
-	double Fixed::predict(const double input) const noexcept { return myWeight * input + myBias; }
+	double Esp32s3::predict(const double input) const noexcept { return myWeight * input + myBias; }
 
 	// -----------------------------------------------------------------------------
-	bool Fixed::train(std::size_t epochCount,double precisionThreshold) noexcept
+	bool Esp32s3::train(std::size_t epochCount,double precisionThreshold) noexcept
 	{
 		double prevPrecision = 0.0;
 		double learningRate = 0.1;
@@ -124,7 +124,7 @@ namespace driver::ai_adapt
 	}
 
 	// -----------------------------------------------------------------------------
-	void Fixed::optimize(const double input, const double output, const double learningRate) noexcept
+	void Esp32s3::optimize(const double input, const double output, const double learningRate) noexcept
 	{
 		// m == yref if x == 0.
 		if (0.0 == input)
@@ -140,7 +140,7 @@ namespace driver::ai_adapt
 	}
 
 	// -----------------------------------------------------------------------------
-	void Fixed::shuffle() noexcept
+	void Esp32s3::shuffle() noexcept
 	{
 		// Iterate through all training sets, swap each index i with a random index r.
 		for (std::size_t i{}; i < myTrainOrder.size(); ++i)
@@ -152,7 +152,7 @@ namespace driver::ai_adapt
 		}
 	}
 	// -----------------------------------------------------------------------------
-	double Fixed::computePrecision() const noexcept
+	double Esp32s3::computePrecision() const noexcept
 	{
 		double sum{0};
 		// Iterate through all training sets.
