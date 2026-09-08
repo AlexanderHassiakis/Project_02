@@ -5,6 +5,7 @@
 
 #include "driver/factory/interface.h"
 #include "driver/adc/esp32s3.h"
+#include "driver/ai_adapt/interface.h"
 #include "driver/gpio/esp32s3.h"
 #include "driver/serial/esp32s3.h"
 #include "driver/timer/esp32s3.h"
@@ -28,8 +29,9 @@ public:
 
     std::unique_ptr<timer::Interface> timer() noexcept override;
 
-    std::unique_ptr<tempsensor::Interface> tempSensor(std::uint8_t pin, adc::Interface& adc) noexcept override;
-    
+    std::unique_ptr<tempsensor::Interface> tempSensor(std::uint8_t pin, adc::Interface &adc,
+                                                      driver::ai_adapt::Interface *linReg) noexcept override;
+
     std::unique_ptr<watchdog::Interface> watchdog() noexcept override;
 
     std::unique_ptr<mqtt::Interface> mqtt() noexcept override;

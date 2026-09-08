@@ -66,13 +66,8 @@ namespace driver::ai_adapt
 		double learningRate = 0.1;
 		constexpr std::size_t evaluationInterval{10};
 		// Check epoch count, return false if 0.
+	
 		if (0U == epochCount)
-		{
-			return false;
-		}
-
-		// Check learning rate, return false if outside range (0.0, 1.0).
-		if ((0.0 >= learningRate) || (1.0 <= learningRate))
 		{
 			return false;
 		}

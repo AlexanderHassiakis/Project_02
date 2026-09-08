@@ -39,8 +39,15 @@ std::unique_ptr<timer::Interface>Esp32s3::timer() noexcept
 }
 
 // temperatursensor
-std::unique_ptr<tempsensor::Interface>Esp32s3::tempSensor(std::uint8_t pin, adc::Interface& adc) noexcept
+std::unique_ptr<tempsensor::Interface> Esp32s3::tempSensor(std::uint8_t pin, adc::Interface &adc,
+                                                           driver::ai_adapt::Interface *linReg) noexcept
 {
+    // Vi kollar om vi har en linReg-modell här. I så fall skapar vi en smart sensor.
+    if (nullptr != linReg)
+    {
+        return std::make_unique<tempsensor::Smart>(adc, pin, linReg);
+    }
+    // Annars skapar vi en vanlig sensor (TMP36).
     return std::make_unique<tempsensor::Tmp36>(adc, pin);
 };
 // Watchdog

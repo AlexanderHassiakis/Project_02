@@ -14,6 +14,7 @@
 #include "driver/tempsensor/interface.h"
 #include "driver/timer/interface.h"
 #include "driver/watchdog/interface.h"
+#include "driver/ai_adapt/interface.h"
 // #include "esp_log.h" // if needed to debugg. Comment out of running stubs in WSL.
 
 namespace app::logic
@@ -25,11 +26,11 @@ namespace app::logic
          * @brief Construct a new Logic object
          * * @param factory
          */
-        explicit Logic(driver::factory::Interface &factory)
+        explicit Logic(driver::factory::Interface &factory, driver::ai_adapt::Interface &linReg)
             : myRxBuffer{}, mySerial{factory.serial()}, myLed{factory.gpio(4U)},
               myTimer{factory.timer()}, myAdc{factory.adc(1)},
               myWatch{factory.watchdog()}, myMqtt(factory.mqtt()),
-              myInitialized{false}, myIsBlinking{false}
+              myLinReg{linReg}, myInitialized{false}, myIsBlinking{false}
         {
             /*Initialize hardware at Boot*/
 
@@ -39,9 +40,12 @@ namespace app::logic
                 mySerial->init();
                 myLed->output(false);
                 myTimer->setPeriod(500U);
-                myTemp = factory.tempSensor(1, *myAdc);
+                myTemp = factory.tempSensor(1, *myAdc, &linReg);
                 myWatch->reset();
                 myInitialized = true;
+                
+                
+                
 
                 if (myMqtt)
                 {
@@ -292,6 +296,9 @@ namespace app::logic
 
         std::unique_ptr<driver::watchdog::Interface> myWatch;
         std::unique_ptr<driver::mqtt::Interface> myMqtt;
+
+        ml::lin_reg::Interface& myLinReg;
+
         bool myInitialized;
         bool myIsBlinking;
 

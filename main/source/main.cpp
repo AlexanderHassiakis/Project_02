@@ -1,29 +1,58 @@
 // Use real drivers when STUB is not defined.
 #ifndef STUB
 
+#include <cstdint>
+#include <vector>
+
 #include "esp_log.h"
 #include "driver/factory/esp32s3.h"
 #include "freertos/task.h"
 #include "system/logic/logic.h"
+#include "driver/ai_adapt/esp32s3.h"
+
+
+
 
 // extern "C" void app_main() Används för ESP IDF .
 extern "C" void app_main()
 {
-    // Vi använder 'static' för att säkerställa att factoryn lever kvar i
-    static driver::factory::Esp32s3 esp_factory;
+    constexpr std::uint32_t epochCount{10U};
 
-    // Skapa applikationslogiken
-    app::logic::Logic myApp(esp_factory);
-
-    // Om din Logic::run() redan har en while(true)-loop:
-    myApp.run();
-
-    // Om run() mot förmodan skulle returnera, sätt en delay här för att hindra krasch.
-    while (true)
+    driver::ai_adapt::Matrix1d trainIn =
     {
-        vTaskDelay(pdMS_TO_TICKS(1000)); // förhindar att system startar om.
-        ESP_LOGI("ERROR", "LOGIC RUN HAS CRASHED!");
-    }
+        100.0, 200.0, 300.0, 400.0, 500.0, 600.0, 700.0, 800.0, 900.0,
+        1000.0, 1100.0, 1200.0, 1300.0, 1400.0, 1500.0, 1600.0, 1700.0, 1750.0
+    };
+    driver::ai_adapt::Matrix1d trainOut =
+        {
+            -40.0, -30.0, -20.0, -10.0, 0.0, 10.0, 20.0, 30.0, 40.0,
+            50.0, 60.0, 70.0, 80.0, 90.0, 100.0, 110.0, 120.0, 125.0};
+
+    driver::ai_adapt::Esp32s3::Esp32s3 linReg{trainIn, trainOut};
+    if (!linReg.train(epochCount))
+    {
+      // Skriv ut felmeddelande, sedan fastnar vi i en loop.
+      ESP_LOGI("ERROR", "LINEREG ERROR");
+      while (1)
+      {
+      }
+  }
+
+  // Vi använder 'static' för att säkerställa att factoryn lever kvar i
+  static driver::factory::Esp32s3 esp_factory{};
+
+  // Skapa applikationslogiken
+  app::logic::Logic myApp{esp_factory, linReg};
+
+  // Om din Logic::run() redan har en while(true)-loop:
+  myApp.run();
+
+  // Om run() mot förmodan skulle returnera, sätt en delay här för att hindra krasch.
+  while (true)
+  {
+    vTaskDelay(pdMS_TO_TICKS(1000)); // förhindar att system startar om.
+    ESP_LOGI("ERROR", "LOGIC RUN HAS CRASHED!");
+  }
 }
 
 // STUB CODE WSL no hardware needed

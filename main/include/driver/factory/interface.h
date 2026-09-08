@@ -4,6 +4,7 @@
 #include <cstdint>
 
 #include "driver/adc/interface.h"
+#include "driver/ai_adapt/interface.h"
 #include "driver/gpio/interface.h"
 #include "driver/serial/interface.h"
 #include "driver/tempsensor/interface.h"
@@ -69,10 +70,12 @@ namespace driver::factory
          *
          * @param pin ADC pin
          * @param adc ADC reference
+         * @param linReg Linear regression model if a smart sensor is to be used. 
+         *               Pass nullptr to use a regular temp sensor.
          */
         virtual std::unique_ptr<tempsensor::Interface>
         
-        tempSensor(std::uint8_t pin, adc::Interface &adc) noexcept = 0;
+        tempSensor(std::uint8_t pin, adc::Interface &adc, driver::ai_adapt::Interface* linReg) noexcept = 0;
 
         /**
          * @brief mqtt communication
