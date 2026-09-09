@@ -41,5 +41,13 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
+      - name: Install clang-format 22.1.8
+        run: |
+          curl -fL -o llvm.tar.xz \
+            https://github.com/llvm/llvm-project/releases/download/llvmorg-22.1.8/LLVM-22.1.8-Linux-X64.tar.xz
+          tar -xf llvm.tar.xz
+          echo "$PWD/LLVM-22.1.8-Linux-X64/bin" >> "$GITHUB_PATH"
+      - name: Show clang-format version
+        run: clang-format --version
       - name: Run analysis
         run: bash ci/format.sh check
