@@ -13,7 +13,7 @@ namespace driver::gpio
 enum class Direction : std::uint8_t
 {
     Input,
-	InputPullup,
-	Output,
+    InputPullup,
+    Output,
 };
 } // namespace driver::gpio

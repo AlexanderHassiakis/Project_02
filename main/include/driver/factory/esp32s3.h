@@ -3,39 +3,38 @@
 #include <cstdint>
 #include <memory>
 
-#include "driver/factory/interface.h"
 #include "driver/adc/esp32s3.h"
 #include "driver/ai_adapt/interface.h"
+#include "driver/factory/interface.h"
 #include "driver/gpio/esp32s3.h"
-#include "driver/serial/esp32s3.h"
-#include "driver/timer/esp32s3.h"
-#include "driver/tempsensor/tmp36.h"
-#include "driver/watchdog/esp32s3.h"
 #include "driver/mqtt/esp32s3.h"
+#include "driver/serial/esp32s3.h"
+#include "driver/tempsensor/tmp36.h"
+#include "driver/timer/esp32s3.h"
+#include "driver/watchdog/esp32s3.h"
 
-namespace driver::factory 
+namespace driver::factory
 {
-class Esp32s3 final : public Interface 
+class Esp32s3 final : public Interface
 {
 public:
-
     ~Esp32s3() noexcept override = default;
 
     std::unique_ptr<adc::Interface> adc(std::uint8_t pin) noexcept override;
-   
+
     std::unique_ptr<gpio::Interface> gpio(std::uint8_t pin) noexcept override;
-    
+
     std::unique_ptr<serial::Interface> serial() noexcept override;
 
     std::unique_ptr<timer::Interface> timer() noexcept override;
 
-    std::unique_ptr<tempsensor::Interface> tempSensor(std::uint8_t pin, adc::Interface &adc,
-                                                      driver::ai_adapt::Interface *linReg) noexcept override;
+    std::unique_ptr<tempsensor::Interface>
+    tempSensor(std::uint8_t pin, adc::Interface& adc,
+               driver::ai_adapt::Interface* linReg) noexcept override;
 
     std::unique_ptr<watchdog::Interface> watchdog() noexcept override;
 
     std::unique_ptr<mqtt::Interface> mqtt() noexcept override;
-    
 };
 
-} //namespace driver::factory
+} // namespace driver::factory

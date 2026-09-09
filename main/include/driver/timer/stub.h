@@ -9,76 +9,62 @@ class Stub final : public Interface
 public:
     /**
      * @brief Construct a new Stub object
-     * 
+     *
      */
-    Stub() noexcept 
-    : isRunning_{false}
-    , period_ms_{0}
-    , hasExpired_{false}
-    , isInitialized_{true} {}
+    Stub() noexcept
+        : isRunning_{false}
+        , period_ms_{0}
+        , hasExpired_{false}
+        , isInitialized_{true}
+    {}
 
     /**
      * @brief Starts the timer.
      */
-    void start() noexcept override 
+    void start() noexcept override
     {
-        isRunning_ = true;
+        isRunning_  = true;
         hasExpired_ = false;
     }
 
     /**
      * @brief Stops the timer.
      */
-    void stop() noexcept override 
-    {
-        isRunning_ = false;
-    }
+    void stop() noexcept override { isRunning_ = false; }
 
     /**
      * @brief Sets the timeout period.
      *
      * @param period_ms Period in milliseconds.
      */
-    void setPeriod(std::uint32_t period_ms) noexcept override 
-    {
-        period_ms_ = period_ms;
-    }
+    void setPeriod(std::uint32_t period_ms) noexcept override { period_ms_ = period_ms; }
 
     /**
      * @brief Checks if the timer has reached.
      *
      * @return true if timeout, false if not.
      */
-    bool hasExpired() const noexcept override 
-    {
-        return hasExpired_;
-    }
+    bool hasExpired() const noexcept override { return hasExpired_; }
 
     /**
      * @brief Checks if the timer driver is initialized.
      *
      * @return true if initialized, false if not initialized.
      */
-    bool isInitialized() const noexcept override 
-    {
-        return isInitialized_;
-    }
-            
+    bool isInitialized() const noexcept override { return isInitialized_; }
+
     /**
-    * @brief  Trigger a timeout manually.
-    */
-    void triggerTimeout() noexcept 
+     * @brief  Trigger a timeout manually.
+     */
+    void triggerTimeout() noexcept
     {
-        if (isRunning_) 
-        {
-            hasExpired_ = true;
-        }
+        if (isRunning_) { hasExpired_ = true; }
     }
 
-    Stub(const Stub &)              = delete;
-    Stub(Stub &&)                   = delete;
-    Stub operator=(const Stub &)    = delete;
-    Stub operator=(Stub &&)         = delete;
+    Stub(const Stub&)           = delete;
+    Stub(Stub&&)                = delete;
+    Stub operator=(const Stub&) = delete;
+    Stub operator=(Stub&&)      = delete;
 
 private:
     bool isRunning_;

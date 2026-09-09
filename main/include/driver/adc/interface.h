@@ -12,13 +12,13 @@ namespace driver::adc
 /**
  * @brief Common interface for ADC drivers.
  */
-class Interface 
+class Interface
 {
 public:
     /**
      * @brief Virtual destructor.
      */
-    virtual ~Interface() noexcept= default;
+    virtual ~Interface() noexcept = default;
 
     /**
      * @brief Check if the ADC driver is ready to use.

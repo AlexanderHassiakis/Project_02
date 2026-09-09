@@ -6,5 +6,3 @@
 // const auto temp = myLinReg.predict(uin);
 
 // class driver::tempsensor::Smart.
-
-

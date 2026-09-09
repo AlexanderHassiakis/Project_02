@@ -3,8 +3,10 @@
 
 #include <cstdint>
 
-namespace driver::gpio {
-class Interface {
+namespace driver::gpio
+{
+class Interface
+{
 public:
     /**
      * @brief Destructor.

@@ -7,49 +7,48 @@
 
 namespace driver::tempsensor
 {
-    class Stub final : public Interface
+class Stub final : public Interface
+{
+public:
+    /**
+     * @brief Construct a new Stub object
+     *
+     */
+    Stub() { init = false; }
+
+    /**
+     * @brief Destroy the Stub object
+     *
+     */
+    ~Stub() = default;
+
+    /**
+     * @brief Reads temperature.
+     *
+     * @return int
+     */
+    int readTemperature() noexcept override
     {
+        return tempRead;
+        std::printf("STUB,%i", tempRead);
+    }
 
-    public:
-        /**
-         * @brief Construct a new Stub object
-         *
-         */
-        Stub() { init = false; }
+    /**
+     * @brief Initilize the tempread
+     *
+     */
+    void initTemp() noexcept override { init = true; }
 
-        /**
-         * @brief Destroy the Stub object
-         *
-         */
-        ~Stub() = default;
+    void setTemp(float temp) noexcept { tempRead = temp; }
 
-        /**
-         * @brief Reads temperature.
-         *
-         * @return int
-         */
-        int readTemperature() noexcept override
-        {
-            return tempRead;
-            std::printf("STUB,%i", tempRead);
-        }
+    /**Esp32s3 construct Forbidden moves/copy. **/
+    Stub(const Stub&)            = delete;
+    Stub(Stub&&)                 = delete;
+    Stub& operator=(const Stub&) = delete;
+    Stub& operator=(Stub&&)      = delete;
 
-        /**
-         * @brief Initilize the tempread
-         *
-         */
-        void initTemp() noexcept override { init = true; }
-
-        void setTemp(float temp) noexcept { tempRead = temp; }
-
-        /**Esp32s3 construct Forbidden moves/copy. **/
-        Stub(const Stub &) = delete;
-        Stub(Stub &&) = delete;
-        Stub &operator=(const Stub &) = delete;
-        Stub &operator=(Stub &&) = delete;
-
-    private:
-        int tempRead{250};
-        bool init;
-    };
+private:
+    int tempRead{250};
+    bool init;
+};
 } // namespace driver::tempsensor

@@ -1,7 +1,7 @@
 
 /**
  * @brief Stub for GPIO
- * 
+ *
  */
 #pragma once
 
@@ -12,45 +12,45 @@ namespace driver::gpio
 class Stub final : public Interface
 {
 public:
-	/**
-	 * @brief Destructor.
-	 */
-		~Stub() noexcept = default;
+    /**
+     * @brief Destructor.
+     */
+    ~Stub() noexcept = default;
 
-	/**
-	 * @brief Construct a new Stub object
-	 * 
-	 */
-		Stub() noexcept
-			: myState{false}
-		{}
+    /**
+     * @brief Construct a new Stub object
+     *
+     */
+    Stub() noexcept
+        : myState{false}
+    {}
 
-	/**
-	 * @brief Set GPIO output.
-	 *
-	 * @param [in] state GPIO state (true = high, false = low).
-	 */
-	void output(bool state) noexcept override { myState = state; }
-	/**
-	 * @brief Read GPIO input.
-	 *
-	 * @return GPIO state (true = high, false = low).
-	 */
-	bool input() const noexcept { return myState; }
+    /**
+     * @brief Set GPIO output.
+     *
+     * @param [in] state GPIO state (true = high, false = low).
+     */
+    void output(bool state) noexcept override { myState = state; }
+    /**
+     * @brief Read GPIO input.
+     *
+     * @return GPIO state (true = high, false = low).
+     */
+    bool input() const noexcept { return myState; }
 
-	/**
-	 * @brief Toggle GPIO state.
-	 */
-	void toggle() noexcept { myState = !myState; }
+    /**
+     * @brief Toggle GPIO state.
+     */
+    void toggle() noexcept { myState = !myState; }
 
-	/**Esp32s3 construct Forbidden moves/copy. **/
-	Stub(const Stub &) = delete;
-	Stub(Stub &&) = delete;
-	Stub &operator=(const Stub &) = delete;
-	Stub &operator=(Stub &&) = delete;
+    /**Esp32s3 construct Forbidden moves/copy. **/
+    Stub(const Stub&)            = delete;
+    Stub(Stub&&)                 = delete;
+    Stub& operator=(const Stub&) = delete;
+    Stub& operator=(Stub&&)      = delete;
 
 private:
-	/** GPIO state (true = high, false = low). */
-	bool myState;
+    /** GPIO state (true = high, false = low). */
+    bool myState;
 };
 } // namespace driver::gpio
