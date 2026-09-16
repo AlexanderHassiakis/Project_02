@@ -23,7 +23,7 @@ public:
     /**
      * @brief Check if the ADC driver is ready to use.
      *
-     * @return `true` if the driver is initialized, otherwise `false`.
+     * @return true if the driver is initialized, otherwise false.
      */
     virtual bool isInitialized() const noexcept = 0;
 
