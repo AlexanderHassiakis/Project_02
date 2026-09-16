@@ -1,19 +1,6 @@
 name: CI
 
-# Specify when to run the pipeline.
-on:
-  push:
-  pull_request:
-
-# Specify jobs to run.
-jobs:
-  firmware-build:
-    name: Build ESP32 firmware
-    runs-on: ubuntu-latest
-    needs: analyze-format
-    steps:name: CI
-
-# Run the pipeline on pushes and pull requests.
+# Ange när pipelinen ska köras
 on:
   push:
   pull_request:
@@ -62,11 +49,9 @@ jobs:
       - name: Collect firmware artifacts
         run: |
           mkdir -p artifacts
-
-          # Copy the main firmware image.
-          cp build/*.bin artifacts/
-
-          # Copy ELF and MAP files when available.
+          # Kopiera huvudfirmware
+          cp build/*.bin artifacts/ 2>/dev/null || true
+          # Kopiera ELF och MAP-filer om de existerar
           cp build/*.elf artifacts/ 2>/dev/null || true
           cp build/*.map artifacts/ 2>/dev/null || true
 
@@ -77,43 +62,3 @@ jobs:
           path: artifacts
           if-no-files-found: error
           retention-days: 3
-
-      - name: Checkout repository
-        uses: actions/checkout@v5
-        with:
-          submodules: recursive
-      - name: Build firmware with ESP-IDF
-        uses: espressif/esp-idf-ci-action@v1
-        with:
-          esp_idf_version: v5.2
-          target: esp32s3
-          command: idf.py build
-          path: main
-      - name: Collect artifacts in artifacts/
-        run: |
-          mkdir -p artifacts
-          mv project_02 artifacts
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v7
-        with:
-          path: artifacts
-          name: project_02
-          if-no-files-found: error
-          retention-days: 3
-
-  analyze-format:
-    name: Check format with clang-format
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v5
-      - name: Install clang-format 22.1.8
-        run: |
-          curl -fL -o llvm.tar.xz \
-            https://github.com/llvm/llvm-project/releases/download/llvmorg-22.1.8/LLVM-22.1.8-Linux-X64.tar.xz
-          tar -xf llvm.tar.xz
-          echo "$PWD/LLVM-22.1.8-Linux-X64/bin" >> "$GITHUB_PATH"
-      - name: Show clang-format version
-        run: clang-format --version
-      - name: Run analysis
-        run: bash ci/format.sh check
