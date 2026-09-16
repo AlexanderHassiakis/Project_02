@@ -11,7 +11,73 @@ jobs:
     name: Build ESP32 firmware
     runs-on: ubuntu-latest
     needs: analyze-format
+    steps:name: CI
+
+# Run the pipeline on pushes and pull requests.
+on:
+  push:
+  pull_request:
+
+jobs:
+  analyze-format:
+    name: Check format with clang-format
+    runs-on: ubuntu-latest
+
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Install clang-format 22.1.8
+        run: |
+          curl -fL -o llvm.tar.xz \
+            https://github.com/llvm/llvm-project/releases/download/llvmorg-22.1.8/LLVM-22.1.8-Linux-X64.tar.xz
+          tar -xf llvm.tar.xz
+          echo "$PWD/LLVM-22.1.8-Linux-X64/bin" >> "$GITHUB_PATH"
+
+      - name: Show clang-format version
+        run: clang-format --version
+
+      - name: Run format check
+        run: bash ci/format.sh check
+
+  firmware-build:
+    name: Build ESP32-S3 firmware
+    runs-on: ubuntu-latest
+    needs: analyze-format
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          submodules: recursive
+
+      - name: Build firmware with ESP-IDF 6.0.1
+        uses: espressif/esp-idf-ci-action@v1
+        with:
+          esp_idf_version: v6.0.1
+          target: esp32s3
+          command: idf.py build
+          path: .
+
+      - name: Collect firmware artifacts
+        run: |
+          mkdir -p artifacts
+
+          # Copy the main firmware image.
+          cp build/*.bin artifacts/
+
+          # Copy ELF and MAP files when available.
+          cp build/*.elf artifacts/ 2>/dev/null || true
+          cp build/*.map artifacts/ 2>/dev/null || true
+
+      - name: Upload firmware artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: project_02
+          path: artifacts
+          if-no-files-found: error
+          retention-days: 3
+
       - name: Checkout repository
         uses: actions/checkout@v5
         with:
