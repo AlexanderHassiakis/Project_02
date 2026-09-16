@@ -41,6 +41,7 @@ public:
 
     void setTemp(float temp) noexcept { tempRead = temp; }
 
+
     /**Esp32s3 construct Forbidden moves/copy. **/
     Stub(const Stub&)            = delete;
     Stub(Stub&&)                 = delete;
