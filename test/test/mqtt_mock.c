@@ -1,53 +1,29 @@
-#include <stdbool.h>
-#include <stddef.h>
-
 #include "test/mqtt_mock.h"
 
-// MQTT
-// ---------------------------------------------
+static esp_mqtt_client mockClient;
 
-void esp_mqtt_client_stop(void)
+extern "C"
 {
- return ESP_OK;
-}
-void esp_mqtt_client_destroy(void)
-{
-	 return ESP_OK;
-}
+//--------------------MQTT---------------------------------------------------------------------------
 
-void esp_mqtt_client_init() 
-{
+    esp_mqtt_client_handle_t esp_mqtt_client_init(const esp_mqtt_client_config_t*)
+    { return &mockClient; }
 
-	return "MOCK" , ESP_OK;
-}
-    void
-    esp_mqtt_client_register_event()
-{
-		 return ESP_OK;
-}
+    esp_err_t esp_mqtt_client_start(esp_mqtt_client_handle_t) { return ESP_OK; }
 
-// ---------------------------------------------
+    esp_err_t esp_mqtt_client_stop(esp_mqtt_client_handle_t) { return ESP_OK; }
 
-// ---------------------------------------------
-// WIFI
-void esp_wifi_set_mode(void)
-{
-	 return ESP_OK;
+    esp_err_t esp_mqtt_client_destroy(esp_mqtt_client_handle_t) { return ESP_OK; }
+
+    int esp_mqtt_client_publish(esp_mqtt_client_handle_t, const char*, const char*, int, int, int)
+    { return 1; }
+
+    int esp_mqtt_client_subscribe(esp_mqtt_client_handle_t, const char*, int) { return 1; }
+
+
+//--------------------WIFI---------------------------------------------------------------------------
+
+    esp_err_t esp_wifi_connect(void) { return ESP_OK; }
+
+    esp_err_t esp_wifi_start(void) { return ESP_OK; }
 }
-void esp_wifi_set_config(void)
-{
-	 return ESP_OK;
-}
-void esp_netif_init()
-{
-	 return ESP_OK;
-}
-void esp_event_loop_create_default()
-{
- return ESP_OK;
-}
-void esp_netif_create_default_wifi_sta()
-{
-	 return ESP_OK;
-}
-// ---------------------------------------------

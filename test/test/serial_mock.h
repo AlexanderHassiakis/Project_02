@@ -3,40 +3,41 @@
 
 #include <stdbool.h>
 #include <stddef.h>
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-// Flytta denna till din hw_platform.h-fil senare, kolla vad vi gjorde i L06.
-typedef int esp_err_t;
+    typedef int esp_err_t;
 
-/** Error code indicating success. */
 #define ESP_OK 0
-
-/** Error code indicating invalid argument. */
 #define ESP_ERR_INVALID_ARG -1
-// Denna makron till hw_platform.h
 
-typedef struct
-{
-	size_t tx_buffer_size;
-	size_t rx_buffer_size;
-} usb_serial_jtag_driver_config_t;
+#ifndef pdMS_TO_TICKS
+#define pdMS_TO_TICKS(ms) (ms)
+#endif
 
-esp_err_t usb_serial_jtag_driver_install(usb_serial_jtag_driver_config_t* cfg);
+    typedef struct
+    {
+        uint32_t tx_buffer_size;
+        uint32_t rx_buffer_size;
+        int intr_priority;
+    } usb_serial_jtag_driver_config_t;
 
-void usb_serial_jtag_driver_uninstall(void);
+    esp_err_t usb_serial_jtag_driver_install(usb_serial_jtag_driver_config_t* cfg);
 
-bool serial_driver_installed(void);
+    esp_err_t usb_serial_jtag_driver_uninstall(void);
 
-void usb_serial_jtag_write_bytes(buf, copyLen, pdMS_TO_TICKS(delay_ms));
+    int usb_serial_jtag_write_bytes(const void* src, size_t size, uint32_t ticks_to_wait);
 
-void usb_serial_jtag_read_bytes(buf, bufLen, delay_zero);
+    int usb_serial_jtag_read_bytes(void* buf, uint32_t length, uint32_t ticks_to_wait);
+
+    bool serial_driver_installed(void);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /** SERIAL_MOCK_H_ */
+#endif
