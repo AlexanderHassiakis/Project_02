@@ -1,10 +1,8 @@
 /**
  * @brief Esp32s3 GPIO Implementation
  */
-
+#include "arch/env/hw_platform.h"
 #include "driver/gpio/esp32s3.h"
-#include "driver/gpio.h"
-#include "esp_log.h"
 #include <cstdint>
 #include <cstdio>
 

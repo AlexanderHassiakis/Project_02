@@ -24,27 +24,6 @@ extern "C"
     typedef uint8_t gpio_num_t;
 
     /**
-     * @brief GPIO config structure.
-     */
-    typedef struct
-    {
-        /** Pin bit mask. */
-        uint64_t pin_bit_mask;
-
-        /** GPIO mode. */
-        int mode;
-
-        /** Pullup enablement flag. */
-        int pull_up_en;
-
-        /** Pulldown enablement flag. */
-        int pull_down_en;
-
-        /** Interrupt type. */
-        int intr_type;
-    } gpio_config_t;
-
-    /**
      * @brief Set GPIO level.
      *
      * @param[in] pin GPIO pin to set.
@@ -64,20 +43,14 @@ extern "C"
     int gpio_get_level(gpio_num_t pin);
 
     /**
-     * @brief Configure GPIO.
-     *
-     * @param[in] config GPIO configuration.
-     *
-     * @return ESP_OK on success, ESP_ERR_INVALID_ARG if the configuration is invalid.
-     */
-    esp_err_t gpio_config(const gpio_config_t* config);
+    * @brief Set GPIO direction.
+    */
+    esp_err_t gpio_set_direction(gpio_num_t pin, int mode);
 
     /**
-     * @brief Get the last configuration passed to gpio_config().
-     *
-     * @return Pointer to the last configuration passed to gpio_config().
-     */
-    const gpio_config_t* gpio_last_config(void);
+    * @brief Set GPIO pull mode.
+    */
+    esp_err_t gpio_set_pull_mode(gpio_num_t pin, int pull_mode);
 
 #ifdef __cplusplus
 } // extern "C"
