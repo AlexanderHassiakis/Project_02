@@ -34,8 +34,10 @@ typedef struct
 
 void esp_mqtt_client_stop(void);
 void esp_mqtt_client_destroy(void);
+void esp_mqtt_client_init();
+void esp_mqtt_client_register_event();
 // ---------------------------------------------
-//WIFI
+// WIFI
 void esp_wifi_set_mode(void);
 void esp_wifi_set_config(void);
 void esp_netif_init();
