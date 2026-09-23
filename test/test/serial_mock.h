@@ -33,6 +33,8 @@ bool serial_driver_installed(void);
 
 void usb_serial_jtag_write_bytes(buf, copyLen, pdMS_TO_TICKS(delay_ms));
 
+void usb_serial_jtag_read_bytes(buf, bufLen, delay_zero);
+
 #ifdef __cplusplus
 }
 #endif

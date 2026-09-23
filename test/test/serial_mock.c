@@ -27,5 +27,12 @@ bool serial_driver_installed(void) { return driver_installed; }
 // -----------------------------------------------------------------------------
 void usb_serial_jtag_write_bytes(buf, copyLen, pdMS_TO_TICKS(delay_ms))
 {
+	
+	return ESP_OK;
+}
 
+void usb_serial_jtag_read_bytes(buf, bufLen, delay_zero)
+{
+
+	return ESP_OK;
 }

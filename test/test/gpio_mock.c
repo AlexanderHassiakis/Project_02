@@ -6,7 +6,7 @@
 #include <stdint.h>
 #include <stdio.h>
 
-#include "arch/env/hw_platform.h"
+#include "test/hw_test/test/hw_platform.h"
 #include "test/gpio_mock.h"
 
 /** Maximum valid pin number for ESP32-S3. */
